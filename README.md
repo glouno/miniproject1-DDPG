@@ -36,8 +36,11 @@ The three-seed pilot does not establish statistically significant effects.
 
 ## Reproduce
 
+Cross-platform setup and backend selection: [PORTABILITY.md](PORTABILITY.md).
+Measured worker/device comparisons: [HARDWARE_RESULTS.md](HARDWARE_RESULTS.md).
+
 Commands below run from `/Users/glouno/Documents/Sorbonne` and use the verified
-existing **Python (Master MIND RL)** environment. For a fresh machine, the exact
+course-level **Python (Sorbonne RL)** environment. For a fresh machine, the exact
 dependency manifest and lock are copied into `environment/`; run
 `uv sync --locked --project RL/miniproject/environment`, then use that directory's
 `.venv/bin/python` in place of the interpreter below. The run metadata records
@@ -46,13 +49,13 @@ the actual Python patch version and CPU platform.
 Run scientific correctness checks:
 
 ```bash
-RL/master-mind-rl/.venv/bin/python -m unittest discover -s RL/miniproject -v
+RL/.venv/bin/python -m unittest discover -s RL/miniproject -v
 ```
 
 Rebuild plots and tables from completed data:
 
 ```bash
-RL/master-mind-rl/.venv/bin/python RL/report/scripts/lunarlander_pilot.py \
+RL/.venv/bin/python RL/report/scripts/lunarlander_pilot.py \
   --input RL/miniproject/outputs/pilot-20261005 \
   --output RL/report/generated/lunarlander-pilot-20261005
 ```
@@ -61,7 +64,7 @@ Independently replay final policies and verify saved state/action/Q alignment an
 direct discounted reward sums (writes new audit artifacts, once per run):
 
 ```bash
-RL/master-mind-rl/.venv/bin/python RL/miniproject/audit_calibration.py \
+RL/.venv/bin/python RL/miniproject/audit_calibration.py \
   --pilot RL/miniproject/outputs/pilot-new --workers 4
 ```
 
@@ -69,16 +72,16 @@ Run another complete pilot into a **new** directory, then its final long-return
 check. Existing run data is never silently overwritten:
 
 ```bash
-RL/master-mind-rl/.venv/bin/python RL/miniproject/run_pilot.py \
+RL/.venv/bin/python RL/miniproject/run_pilot.py \
   --output RL/miniproject/outputs/pilot-new --workers 4
-RL/master-mind-rl/.venv/bin/python RL/miniproject/calibration.py \
+RL/.venv/bin/python RL/miniproject/calibration.py \
   --pilot RL/miniproject/outputs/pilot-new --workers 4
 ```
 
 To run a single different configuration, copy/edit a configuration JSON, then:
 
 ```bash
-RL/master-mind-rl/.venv/bin/python RL/miniproject/experiment.py \
+RL/.venv/bin/python RL/miniproject/experiment.py \
   --config RL/miniproject/configs/pilot.json \
   --algorithm td3 --layer-norm 1 --seed 10 \
   --output RL/miniproject/outputs/new-td3-ln1-seed10

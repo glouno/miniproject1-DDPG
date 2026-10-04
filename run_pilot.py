@@ -18,13 +18,17 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--workers', type=int, default=4)
+    parser.add_argument('--config', type=Path)
+    parser.add_argument('--device', choices=['cpu', 'cuda', 'mps'], default='cpu')
+    parser.add_argument('--seeds', nargs='+', type=int, default=[0, 1, 2])
     args = parser.parse_args()
     base = Path(__file__).resolve().parent
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=True)
-    config = base / 'configs' / 'pilot.json'
-    jobs = [(algo, ln, seed) for seed in (0, 1, 2) for algo in ('ddpg', 'td3') for ln in (0, 1)]
-    manifest = dict(stage='exploratory pilot', expected_runs=12, seeds=[0, 1, 2],
+    config = (args.config or base / 'configs' / 'pilot.json').resolve()
+    assert args.workers > 0 and len(set(args.seeds)) == len(args.seeds)
+    jobs = [(algo, ln, seed) for seed in args.seeds for algo in ('ddpg', 'td3') for ln in (0, 1)]
+    manifest = dict(stage='exploratory pilot', expected_runs=len(jobs), seeds=args.seeds, device=args.device,
         created_at=datetime.now(timezone.utc).isoformat(),
         config=json.loads(config.read_text()),
         experiment_sha256=hashlib.sha256((base/'experiment.py').read_bytes()).hexdigest(),
@@ -41,7 +45,7 @@ def main():
         name = f'{algo}-ln{ln}-seed{seed}'
         command = [sys.executable, str(base/'experiment.py'), '--config', str(config),
                    '--algorithm', algo, '--layer-norm', str(ln), '--seed', str(seed),
-                   '--output', str(output/name)]
+                   '--output', str(output/name), '--device', args.device]
         env = dict(os.environ, OMP_NUM_THREADS='1', OPENBLAS_NUM_THREADS='1', MKL_NUM_THREADS='1')
         print('START '+name, flush=True)
         with (output/'logs'/f'{name}.log').open('w') as log:
@@ -57,7 +61,7 @@ def main():
                 failures.append(name)
     if failures:
         raise RuntimeError(f'Failed runs: {failures}; read logs. No results were replaced.')
-    print('PILOT COMPLETE: 12/12 runs', flush=True)
+    print(f'PILOT COMPLETE: {len(jobs)}/{len(jobs)} runs', flush=True)
 
 
 if __name__ == '__main__':

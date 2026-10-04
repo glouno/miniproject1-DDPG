@@ -1,0 +1,1054 @@
+[
+  {
+    "created_at": "2026-10-04T23:06:08.571922+00:00",
+    "platform": "macOS-27.0.1-arm64-arm-64bit",
+    "python": "3.11.13",
+    "device": "cpu",
+    "jobs": 8,
+    "config": {
+      "max_steps": 6000,
+      "actor_hidden": [
+        128,
+        128
+      ],
+      "critic_hidden": [
+        128,
+        128
+      ],
+      "gamma": 0.99,
+      "tau": 0.005,
+      "actor_lr": 0.0003,
+      "critic_lr": 0.0003,
+      "batch_size": 128,
+      "replay_capacity": 100000,
+      "learning_starts": 1000,
+      "gradient_steps_per_transition": 1,
+      "exploration_noise": 0.1,
+      "policy_delay": 2,
+      "target_noise": 0.2,
+      "target_noise_clip": 0.5,
+      "eval_interval": 6000,
+      "eval_episodes": 2,
+      "eval_seed_start": 10000,
+      "train_horizon": 1000,
+      "diagnostic_horizon": 1000,
+      "diagnostic_stride": 10,
+      "device": "cpu"
+    },
+    "source_sha256": "6df97383728611ca7281f91a5b058928523ebcd95fa7279d7cc2c45159408f68",
+    "note": "One timing batch per worker count; short timing workloads, not scientific results.",
+    "batches": [
+      {
+        "workers": 1,
+        "wall_seconds": 78.12633862500661,
+        "transitions_per_second": 614.3894728049652,
+        "runs": [
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.095,
+            "training_seconds": 8.406,
+            "status": "complete",
+            "elapsed_seconds": 8.501,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -249.14334557747952,
+            "final_bias": 95.83999735813444
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.077,
+            "training_seconds": 7.964,
+            "status": "complete",
+            "elapsed_seconds": 8.041,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -192.95344005615152,
+            "final_bias": 92.09979377674878
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.118,
+            "training_seconds": 7.637,
+            "status": "complete",
+            "elapsed_seconds": 7.755,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -251.12677949247862,
+            "final_bias": 68.11650346017329
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.241,
+            "training_seconds": 7.119,
+            "status": "complete",
+            "elapsed_seconds": 7.36,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -118.8350984401603,
+            "final_bias": null
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.136,
+            "training_seconds": 7.576,
+            "status": "complete",
+            "elapsed_seconds": 7.712,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -179.18858817400286,
+            "final_bias": 49.0973952152375
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.195,
+            "training_seconds": 7.506,
+            "status": "complete",
+            "elapsed_seconds": 7.701,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -249.17949166438635,
+            "final_bias": 41.13750410146875
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.173,
+            "training_seconds": 7.745,
+            "status": "complete",
+            "elapsed_seconds": 7.919,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -52.67025086651168,
+            "final_bias": 59.50871051142758
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.065,
+            "training_seconds": 7.776,
+            "status": "complete",
+            "elapsed_seconds": 7.842,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -51.68726504068909,
+            "final_bias": 28.921842351224008
+          }
+        ],
+        "mean_training_seconds": 7.716125
+      },
+      {
+        "workers": 4,
+        "wall_seconds": 21.7055231659906,
+        "transitions_per_second": 2211.418708175117,
+        "runs": [
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.085,
+            "training_seconds": 8.508,
+            "status": "complete",
+            "elapsed_seconds": 8.593,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -249.14334557747952,
+            "final_bias": 95.83999735813444
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.081,
+            "training_seconds": 8.424,
+            "status": "complete",
+            "elapsed_seconds": 8.505,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -192.95344005615152,
+            "final_bias": 92.09979377674878
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.12,
+            "training_seconds": 8.464,
+            "status": "complete",
+            "elapsed_seconds": 8.584,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -251.12677949247862,
+            "final_bias": 68.11650346017329
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.267,
+            "training_seconds": 8.379,
+            "status": "complete",
+            "elapsed_seconds": 8.646,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -118.8350984401603,
+            "final_bias": null
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.138,
+            "training_seconds": 8.12,
+            "status": "complete",
+            "elapsed_seconds": 8.258,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -179.18858817400286,
+            "final_bias": 49.0973952152375
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.197,
+            "training_seconds": 8.707,
+            "status": "complete",
+            "elapsed_seconds": 8.904,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -249.17949166438635,
+            "final_bias": 41.13750410146875
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.177,
+            "training_seconds": 8.671,
+            "status": "complete",
+            "elapsed_seconds": 8.847,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -52.67025086651168,
+            "final_bias": 59.50871051142758
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.069,
+            "training_seconds": 8.68,
+            "status": "complete",
+            "elapsed_seconds": 8.749,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -51.68726504068909,
+            "final_bias": 28.921842351224008
+          }
+        ],
+        "mean_training_seconds": 8.494125
+      },
+      {
+        "workers": 8,
+        "wall_seconds": 13.058895333000692,
+        "transitions_per_second": 3675.6554651832475,
+        "runs": [
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.088,
+            "training_seconds": 10.065,
+            "status": "complete",
+            "elapsed_seconds": 10.153,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -249.14334557747952,
+            "final_bias": 95.83999735813444
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.098,
+            "training_seconds": 10.193,
+            "status": "complete",
+            "elapsed_seconds": 10.29,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -192.95344005615152,
+            "final_bias": 92.09979377674878
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.134,
+            "training_seconds": 10.171,
+            "status": "complete",
+            "elapsed_seconds": 10.305,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -251.12677949247862,
+            "final_bias": 68.11650346017329
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.3,
+            "training_seconds": 10.266,
+            "status": "complete",
+            "elapsed_seconds": 10.566,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -118.8350984401603,
+            "final_bias": null
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.17,
+            "training_seconds": 10.255,
+            "status": "complete",
+            "elapsed_seconds": 10.425,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -179.18858817400286,
+            "final_bias": 49.0973952152375
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.225,
+            "training_seconds": 9.951,
+            "status": "complete",
+            "elapsed_seconds": 10.177,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -249.17949166438635,
+            "final_bias": 41.13750410146875
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.199,
+            "training_seconds": 10.116,
+            "status": "complete",
+            "elapsed_seconds": 10.315,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -52.67025086651168,
+            "final_bias": 59.50871051142758
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.082,
+            "training_seconds": 10.052,
+            "status": "complete",
+            "elapsed_seconds": 10.134,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -51.68726504068909,
+            "final_bias": 28.921842351224008
+          }
+        ],
+        "mean_training_seconds": 10.133624999999999
+      }
+    ],
+    "directory": "benchmark-mac-cpu-fixed-20261005"
+  },
+  {
+    "created_at": "2026-10-04T23:05:49.036581+00:00",
+    "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "python": "3.11.16",
+    "device": "cpu",
+    "jobs": 8,
+    "config": {
+      "max_steps": 6000,
+      "actor_hidden": [
+        128,
+        128
+      ],
+      "critic_hidden": [
+        128,
+        128
+      ],
+      "gamma": 0.99,
+      "tau": 0.005,
+      "actor_lr": 0.0003,
+      "critic_lr": 0.0003,
+      "batch_size": 128,
+      "replay_capacity": 100000,
+      "learning_starts": 1000,
+      "gradient_steps_per_transition": 1,
+      "exploration_noise": 0.1,
+      "policy_delay": 2,
+      "target_noise": 0.2,
+      "target_noise_clip": 0.5,
+      "eval_interval": 6000,
+      "eval_episodes": 2,
+      "eval_seed_start": 10000,
+      "train_horizon": 1000,
+      "diagnostic_horizon": 1000,
+      "diagnostic_stride": 10,
+      "device": "cpu"
+    },
+    "source_sha256": "6df97383728611ca7281f91a5b058928523ebcd95fa7279d7cc2c45159408f68",
+    "note": "One timing batch per worker count; short timing workloads, not scientific results.",
+    "batches": [
+      {
+        "workers": 1,
+        "wall_seconds": 131.07722909099994,
+        "transitions_per_second": 366.1963281713573,
+        "runs": [
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.094,
+            "training_seconds": 13.374,
+            "status": "complete",
+            "elapsed_seconds": 13.468,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -263.406499701281,
+            "final_bias": 107.38137838724265
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.087,
+            "training_seconds": 15.08,
+            "status": "complete",
+            "elapsed_seconds": 15.167,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -135.5303364139072,
+            "final_bias": 61.05947888082592
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.092,
+            "training_seconds": 14.437,
+            "status": "complete",
+            "elapsed_seconds": 14.529,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -199.15635047743427,
+            "final_bias": 91.47831418975225
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.159,
+            "training_seconds": 13.539,
+            "status": "complete",
+            "elapsed_seconds": 13.698,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -156.3756720815223,
+            "final_bias": 45.738674512408004
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.134,
+            "training_seconds": 13.17,
+            "status": "complete",
+            "elapsed_seconds": 13.304,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -202.42677745330914,
+            "final_bias": 44.81313390702082
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.137,
+            "training_seconds": 13.725,
+            "status": "complete",
+            "elapsed_seconds": 13.862,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -255.70676353898722,
+            "final_bias": 63.61039415429774
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.108,
+            "training_seconds": 13.26,
+            "status": "complete",
+            "elapsed_seconds": 13.368,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -143.84556002440098,
+            "final_bias": 61.92407002392698
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.204,
+            "training_seconds": 13.676,
+            "status": "complete",
+            "elapsed_seconds": 13.88,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -313.1676402788073,
+            "final_bias": 62.25763030943832
+          }
+        ],
+        "mean_training_seconds": 13.782625
+      },
+      {
+        "workers": 4,
+        "wall_seconds": 40.8443788959994,
+        "transitions_per_second": 1175.1923103597856,
+        "runs": [
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.095,
+            "training_seconds": 17.559,
+            "status": "complete",
+            "elapsed_seconds": 17.654,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -263.406499701281,
+            "final_bias": 107.38137838724265
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.096,
+            "training_seconds": 17.439,
+            "status": "complete",
+            "elapsed_seconds": 17.536,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -135.5303364139072,
+            "final_bias": 61.05947888082592
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.124,
+            "training_seconds": 17.624,
+            "status": "complete",
+            "elapsed_seconds": 17.748,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -199.15635047743427,
+            "final_bias": 91.47831418975225
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.191,
+            "training_seconds": 17.538,
+            "status": "complete",
+            "elapsed_seconds": 17.729,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -156.3756720815223,
+            "final_bias": 45.738674512408004
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.165,
+            "training_seconds": 16.657,
+            "status": "complete",
+            "elapsed_seconds": 16.823,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -202.42677745330914,
+            "final_bias": 44.81313390702082
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.189,
+            "training_seconds": 16.655,
+            "status": "complete",
+            "elapsed_seconds": 16.843,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -255.70676353898722,
+            "final_bias": 63.61039415429774
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.127,
+            "training_seconds": 16.534,
+            "status": "complete",
+            "elapsed_seconds": 16.661,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -143.84556002440098,
+            "final_bias": 61.92407002392698
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.235,
+            "training_seconds": 16.491,
+            "status": "complete",
+            "elapsed_seconds": 16.726,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -313.1676402788073,
+            "final_bias": 62.25763030943832
+          }
+        ],
+        "mean_training_seconds": 17.062124999999998
+      },
+      {
+        "workers": 8,
+        "wall_seconds": 33.506717407,
+        "transitions_per_second": 1432.5485668128197,
+        "runs": [
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.115,
+            "training_seconds": 28.247,
+            "status": "complete",
+            "elapsed_seconds": 28.363,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -263.406499701281,
+            "final_bias": 107.38137838724265
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.132,
+            "training_seconds": 28.225,
+            "status": "complete",
+            "elapsed_seconds": 28.357,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -135.5303364139072,
+            "final_bias": 61.05947888082592
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.169,
+            "training_seconds": 28.258,
+            "status": "complete",
+            "elapsed_seconds": 28.427,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -199.15635047743427,
+            "final_bias": 91.47831418975225
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.251,
+            "training_seconds": 27.944,
+            "status": "complete",
+            "elapsed_seconds": 28.195,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -156.3756720815223,
+            "final_bias": 45.738674512408004
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.221,
+            "training_seconds": 28.378,
+            "status": "complete",
+            "elapsed_seconds": 28.599,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -202.42677745330914,
+            "final_bias": 44.81313390702082
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.2,
+            "training_seconds": 28.218,
+            "status": "complete",
+            "elapsed_seconds": 28.418,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -255.70676353898722,
+            "final_bias": 63.61039415429774
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.221,
+            "training_seconds": 28.77,
+            "status": "complete",
+            "elapsed_seconds": 28.991,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -143.84556002440098,
+            "final_bias": 61.92407002392698
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.277,
+            "training_seconds": 28.764,
+            "status": "complete",
+            "elapsed_seconds": 29.04,
+            "transitions": 6000,
+            "critic_rounds": 5001,
+            "actor_updates": 2500,
+            "final_return": -313.1676402788073,
+            "final_bias": 62.25763030943832
+          }
+        ],
+        "mean_training_seconds": 28.3505
+      }
+    ],
+    "directory": "benchmark-wsl-cpu-20261005"
+  },
+  {
+    "created_at": "2026-10-04T23:09:04.405283+00:00",
+    "platform": "macOS-27.0.1-arm64-arm-64bit",
+    "python": "3.11.13",
+    "device": "cpu",
+    "jobs": 3,
+    "config": {
+      "max_steps": 2000,
+      "actor_hidden": [
+        128,
+        128
+      ],
+      "critic_hidden": [
+        128,
+        128
+      ],
+      "gamma": 0.99,
+      "tau": 0.005,
+      "actor_lr": 0.0003,
+      "critic_lr": 0.0003,
+      "batch_size": 128,
+      "replay_capacity": 100000,
+      "learning_starts": 1000,
+      "gradient_steps_per_transition": 1,
+      "exploration_noise": 0.1,
+      "policy_delay": 2,
+      "target_noise": 0.2,
+      "target_noise_clip": 0.5,
+      "eval_interval": 2000,
+      "eval_episodes": 2,
+      "eval_seed_start": 10000,
+      "train_horizon": 1000,
+      "diagnostic_horizon": 1000,
+      "diagnostic_stride": 10,
+      "device": "cpu"
+    },
+    "source_sha256": "6df97383728611ca7281f91a5b058928523ebcd95fa7279d7cc2c45159408f68",
+    "note": "One timing batch per worker count; short timing workloads, not scientific results.",
+    "batches": [
+      {
+        "workers": 1,
+        "wall_seconds": 9.824028333998285,
+        "transitions_per_second": 610.7474241738122,
+        "runs": [
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.242,
+            "training_seconds": 1.483,
+            "status": "complete",
+            "elapsed_seconds": 1.725,
+            "transitions": 2000,
+            "critic_rounds": 1001,
+            "actor_updates": 500,
+            "final_return": -138.16495987631347,
+            "final_bias": null
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.113,
+            "training_seconds": 1.491,
+            "status": "complete",
+            "elapsed_seconds": 1.604,
+            "transitions": 2000,
+            "critic_rounds": 1001,
+            "actor_updates": 500,
+            "final_return": -97.86763016046373,
+            "final_bias": 21.429839182519736
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.249,
+            "training_seconds": 1.499,
+            "status": "complete",
+            "elapsed_seconds": 1.747,
+            "transitions": 2000,
+            "critic_rounds": 1001,
+            "actor_updates": 500,
+            "final_return": -187.45421264154714,
+            "final_bias": null
+          }
+        ],
+        "mean_training_seconds": 1.4910000000000003
+      }
+    ],
+    "directory": "benchmark-mac-device-cpu-20261005"
+  },
+  {
+    "created_at": "2026-10-04T23:09:14.274057+00:00",
+    "platform": "macOS-27.0.1-arm64-arm-64bit",
+    "python": "3.11.13",
+    "device": "mps",
+    "jobs": 3,
+    "config": {
+      "max_steps": 2000,
+      "actor_hidden": [
+        128,
+        128
+      ],
+      "critic_hidden": [
+        128,
+        128
+      ],
+      "gamma": 0.99,
+      "tau": 0.005,
+      "actor_lr": 0.0003,
+      "critic_lr": 0.0003,
+      "batch_size": 128,
+      "replay_capacity": 100000,
+      "learning_starts": 1000,
+      "gradient_steps_per_transition": 1,
+      "exploration_noise": 0.1,
+      "policy_delay": 2,
+      "target_noise": 0.2,
+      "target_noise_clip": 0.5,
+      "eval_interval": 2000,
+      "eval_episodes": 2,
+      "eval_seed_start": 10000,
+      "train_horizon": 1000,
+      "diagnostic_horizon": 1000,
+      "diagnostic_stride": 10,
+      "device": "mps"
+    },
+    "source_sha256": "6df97383728611ca7281f91a5b058928523ebcd95fa7279d7cc2c45159408f68",
+    "note": "One timing batch per worker count; short timing workloads, not scientific results.",
+    "batches": [
+      {
+        "workers": 1,
+        "wall_seconds": 39.05978608300211,
+        "transitions_per_second": 153.6106722973339,
+        "runs": [
+          {
+            "device": "mps",
+            "checkpoint_seconds": 0.155,
+            "training_seconds": 12.448,
+            "status": "complete",
+            "elapsed_seconds": 12.604,
+            "transitions": 2000,
+            "critic_rounds": 1001,
+            "actor_updates": 500,
+            "final_return": -191.63423355394167,
+            "final_bias": 28.15439219593136
+          },
+          {
+            "device": "mps",
+            "checkpoint_seconds": 0.086,
+            "training_seconds": 10.707,
+            "status": "complete",
+            "elapsed_seconds": 10.793,
+            "transitions": 2000,
+            "critic_rounds": 1001,
+            "actor_updates": 500,
+            "final_return": -241.8596354406943,
+            "final_bias": 119.94009557356492
+          },
+          {
+            "device": "mps",
+            "checkpoint_seconds": 0.102,
+            "training_seconds": 10.291,
+            "status": "complete",
+            "elapsed_seconds": 10.393,
+            "transitions": 2000,
+            "critic_rounds": 1001,
+            "actor_updates": 500,
+            "final_return": -282.48698712397334,
+            "final_bias": 113.61500007370299
+          }
+        ],
+        "mean_training_seconds": 11.148666666666665
+      }
+    ],
+    "directory": "benchmark-mac-device-mps-20261005"
+  },
+  {
+    "created_at": "2026-10-04T23:09:35.722554+00:00",
+    "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "python": "3.11.16",
+    "device": "cpu",
+    "jobs": 3,
+    "config": {
+      "max_steps": 2000,
+      "actor_hidden": [
+        128,
+        128
+      ],
+      "critic_hidden": [
+        128,
+        128
+      ],
+      "gamma": 0.99,
+      "tau": 0.005,
+      "actor_lr": 0.0003,
+      "critic_lr": 0.0003,
+      "batch_size": 128,
+      "replay_capacity": 100000,
+      "learning_starts": 1000,
+      "gradient_steps_per_transition": 1,
+      "exploration_noise": 0.1,
+      "policy_delay": 2,
+      "target_noise": 0.2,
+      "target_noise_clip": 0.5,
+      "eval_interval": 2000,
+      "eval_episodes": 2,
+      "eval_seed_start": 10000,
+      "train_horizon": 1000,
+      "diagnostic_horizon": 1000,
+      "diagnostic_stride": 10,
+      "device": "cpu"
+    },
+    "source_sha256": "6df97383728611ca7281f91a5b058928523ebcd95fa7279d7cc2c45159408f68",
+    "note": "One timing batch per worker count; short timing workloads, not scientific results.",
+    "batches": [
+      {
+        "workers": 1,
+        "wall_seconds": 26.04258294600004,
+        "transitions_per_second": 230.39189363210068,
+        "runs": [
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.393,
+            "training_seconds": 3.761,
+            "status": "complete",
+            "elapsed_seconds": 4.154,
+            "transitions": 2000,
+            "critic_rounds": 1001,
+            "actor_updates": 500,
+            "final_return": -167.62815030598935,
+            "final_bias": null
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.268,
+            "training_seconds": 7.88,
+            "status": "complete",
+            "elapsed_seconds": 8.148,
+            "transitions": 2000,
+            "critic_rounds": 1001,
+            "actor_updates": 500,
+            "final_return": -140.6119369581192,
+            "final_bias": 41.435200079105186
+          },
+          {
+            "device": "cpu",
+            "checkpoint_seconds": 0.098,
+            "training_seconds": 3.219,
+            "status": "complete",
+            "elapsed_seconds": 3.317,
+            "transitions": 2000,
+            "critic_rounds": 1001,
+            "actor_updates": 500,
+            "final_return": -193.2862098112956,
+            "final_bias": 82.03785901220647
+          }
+        ],
+        "mean_training_seconds": 4.953333333333333
+      }
+    ],
+    "directory": "benchmark-wsl-device-cpu-20261005"
+  },
+  {
+    "created_at": "2026-10-04T23:10:00.944815+00:00",
+    "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "python": "3.11.16",
+    "device": "cuda",
+    "jobs": 3,
+    "config": {
+      "max_steps": 2000,
+      "actor_hidden": [
+        128,
+        128
+      ],
+      "critic_hidden": [
+        128,
+        128
+      ],
+      "gamma": 0.99,
+      "tau": 0.005,
+      "actor_lr": 0.0003,
+      "critic_lr": 0.0003,
+      "batch_size": 128,
+      "replay_capacity": 100000,
+      "learning_starts": 1000,
+      "gradient_steps_per_transition": 1,
+      "exploration_noise": 0.1,
+      "policy_delay": 2,
+      "target_noise": 0.2,
+      "target_noise_clip": 0.5,
+      "eval_interval": 2000,
+      "eval_episodes": 2,
+      "eval_seed_start": 10000,
+      "train_horizon": 1000,
+      "diagnostic_horizon": 1000,
+      "diagnostic_stride": 10,
+      "device": "cuda"
+    },
+    "source_sha256": "6df97383728611ca7281f91a5b058928523ebcd95fa7279d7cc2c45159408f68",
+    "note": "One timing batch per worker count; short timing workloads, not scientific results.",
+    "batches": [
+      {
+        "workers": 1,
+        "wall_seconds": 28.864097011000013,
+        "transitions_per_second": 207.8706982488806,
+        "runs": [
+          {
+            "device": "cuda",
+            "checkpoint_seconds": 0.164,
+            "training_seconds": 7.206,
+            "status": "complete",
+            "elapsed_seconds": 7.37,
+            "transitions": 2000,
+            "critic_rounds": 1001,
+            "actor_updates": 500,
+            "final_return": -51.926085774632554,
+            "final_bias": 11.843054725483373
+          },
+          {
+            "device": "cuda",
+            "checkpoint_seconds": 0.107,
+            "training_seconds": 6.546,
+            "status": "complete",
+            "elapsed_seconds": 6.653,
+            "transitions": 2000,
+            "critic_rounds": 1001,
+            "actor_updates": 500,
+            "final_return": -241.03961597359682,
+            "final_bias": 107.45180644237034
+          },
+          {
+            "device": "cuda",
+            "checkpoint_seconds": 0.135,
+            "training_seconds": 6.978,
+            "status": "complete",
+            "elapsed_seconds": 7.113,
+            "transitions": 2000,
+            "critic_rounds": 1001,
+            "actor_updates": 500,
+            "final_return": -75.38969760332294,
+            "final_bias": 26.462480682145284
+          }
+        ],
+        "mean_training_seconds": 6.91
+      }
+    ],
+    "directory": "benchmark-wsl-device-cuda-20261005"
+  }
+]
