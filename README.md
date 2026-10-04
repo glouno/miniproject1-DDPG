@@ -107,3 +107,17 @@ set, reconstructed by replaying seeded action prefixes rather than restoring
 an observation vector, can help distinguish calibration changes from changed
 state visitation. Do not expand architecture, update ratio, actor delay and
 Optuna search all at once.
+
+## Long study
+
+[STUDY_PROTOCOL.md](STUDY_PROTOCOL.md) freezes the 40-run, 500k-step comparison,
+held-out evaluations, common probes, seed-level analysis and recovery methods.
+The new `study_runner.py` uses frozen source snapshots and resumable training
+states; the older pilot runner retains its inference-only checkpoints.
+
+Read current progress with `python miniproject/study_status.py --input <study-dir>`.
+Completed results and figures are generated automatically under `<study-dir>/analysis/`.
+Use `launch_study.py` only after preparing/testing a study. It installs a macOS
+launchd job with caffeinate for its lifetime; it survives closing Codex and releases
+the sleep assertion on exit. Keep the lid open and AC connected. A five-hour
+deadline saves active runs and leaves an explicit incomplete status if necessary.

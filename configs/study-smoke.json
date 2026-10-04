@@ -1,0 +1,17 @@
+{
+  "max_steps": 300,
+  "actor_hidden": [
+    16,
+    16
+  ],
+  "critic_hidden": [
+    16,
+    16
+  ],
+  "batch_size": 32,
+  "replay_capacity": 1000,
+  "learning_starts": 100,
+  "eval_interval": 300,
+  "eval_episodes": 1,
+  "diagnostic_horizon": 10000
+}
