@@ -36,7 +36,10 @@ Reconstruct by resetting and replaying the prefix; verify the observation exactl
 Force that common first action, then follow each frozen current actor. This fixes
 starting state/action visitation, while continuation policies can still differ.
 A serialized bank and its SHA-256 are frozen before launch; all conditions use it.
-Measure signed Q1 error and RMSE on these probes at all checkpoints.
+Measure signed Q1 error and pooled RMSE across the fixed probe bank at all
+checkpoints. Raw per-probe trajectory RMSEs are absolute errors (one pair each);
+the analysis takes the square root of their mean square. On-policy RMSE remains
+the mean of episode RMSEs as declared above.
 
 Inference unit: independent training seed. Primary comparisons are paired LN
 on-minus-off within each algorithm at 500k for performance, on-policy signed

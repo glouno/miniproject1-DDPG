@@ -24,6 +24,12 @@ def analyse(root):
         directory=root/job['directory'];summary=json.loads((directory/'summary.json').read_text())
         assert summary['status']=='complete' and summary['transitions']==manifest['config']['max_steps']
         metrics=[json.loads(line) for line in (directory/'metrics.jsonl').read_text().splitlines()]
+        # Each common trajectory supplies one pair. Mean trajectory RMSE is MAE;
+        # report the pooled RMSE over the fixed probe bank instead.
+        for metric in metrics:
+            probe = metric['common_probe']
+            probe['mean_probe_absolute_error'] = probe['rmse_q1']
+            probe['rmse_q1'] = float(np.sqrt(np.mean([e['rmse_q1']**2 for e in probe['episodes']])))
         expected=list(range(0,manifest['config']['max_steps']+1,manifest['config']['eval_interval']))
         if expected[-1]!=manifest['config']['max_steps']:
             expected.append(manifest['config']['max_steps'])
@@ -80,6 +86,7 @@ def analyse(root):
         lines.append(f"- {effect['algorithm'].upper()} {effect['metric']}: {effect['on_minus_off']:.2f} [{effect['low']:.2f}, {effect['high']:.2f}].")
     lines+=['','Intervals are pointwise/descriptive, do not adjust for multiple comparisons, and are imprecise with small seed counts.',
             'Trajectories and sampled pairs are not independent training replicates. No causal effect is inferred from bias/performance associations.',
+            'Common-probe RMSE is pooled over the fixed bank; raw journals also retain the mean per-probe absolute error.',
             'Common probes fix the physical starting state and first action; subsequent actions use each frozen current policy.',
             'Censored Monte Carlo values are finite observed suffixes; horizon sensitivity and censor counts are in raw metrics.','',
             'Inspect individual seeds, convergence and horizon sensitivity before interpreting endpoint differences or adding an ablation.']
