@@ -121,3 +121,7 @@ Use `launch_study.py` only after preparing/testing a study. It installs a macOS
 launchd job with caffeinate for its lifetime; it survives closing Codex and releases
 the sleep assertion on exit. Keep the lid open and AC connected. A five-hour
 deadline saves active runs and leaves an explicit incomplete status if necessary.
+
+The completed 500k study is analysed in [STUDY_RESULTS.md](STUDY_RESULTS.md).
+`review_study.py` regenerates the runtime/seed review and focused plots from the
+saved study data; it does not train or select a best checkpoint.
