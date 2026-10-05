@@ -1,4 +1,4 @@
-# LunarLander mini-project
+# miniproject1-DDPG
 
 This workspace contains the experiment implementation, a completed exploratory
 pilot and a student-facing analysis notebook. It is separate from the TME
@@ -19,14 +19,13 @@ each run's `tensorboard/` directory. JSON/NPZ records remain authoritative;
 resume rebuilds the dashboard from recovered journals and purges stale events.
 Common-probe Q1 RMSE is pooled across probes, matching the report figures.
 
-Export the completed 40-run study without retraining (commands from the
-Sorbonne directory):
+Export the completed 40-run study without retraining (commands from this repository root):
 
 ```bash
-RL/.venv/bin/python RL/miniproject/tensorboard_logging.py \
-  --input RL/miniproject/outputs/study-20261005-500k
-RL/.venv/bin/tensorboard \
-  --logdir RL/miniproject/outputs/study-20261005-500k/tensorboard \
+environment/.venv/bin/python tensorboard_logging.py \
+  --input outputs/study-20261005-500k
+environment/.venv/bin/tensorboard \
+  --logdir outputs/study-20261005-500k/tensorboard \
   --host 127.0.0.1 --port 6006
 ```
 
@@ -59,8 +58,8 @@ the protocol and notebook. Bias plots based only on completed trajectories
 remain explicitly marked as conditional.
 
 Figures, tables and the generated working analysis are in
-`../report/generated/lunarlander-pilot-20261005/`. Source figure code is tracked
-at `../report/scripts/lunarlander_pilot.py`. The shaded bands and ± values show
+`generated/lunarlander-pilot-20261005/`. Source figure code is tracked
+at `lunarlander_pilot.py`. The shaded bands and ± values show
 **sample standard deviations across three independent training seeds**.
 The three-seed pilot does not establish statistically significant effects.
 
@@ -69,52 +68,49 @@ The three-seed pilot does not establish statistically significant effects.
 Cross-platform setup and backend selection: [PORTABILITY.md](PORTABILITY.md).
 Measured worker/device comparisons: [HARDWARE_RESULTS.md](HARDWARE_RESULTS.md).
 
-Commands below run from `/Users/glouno/Documents/Sorbonne` and use the verified
-course-level **Python (Sorbonne RL)** environment. For a fresh machine, the exact
-dependency manifest and lock are copied into `environment/`; run
-`uv sync --locked --project RL/miniproject/environment`, then use that directory's
-`.venv/bin/python` in place of the interpreter below. The run metadata records
+Commands below run from this repository root. Install the locked environment with
+`uv sync --locked --project environment`. The run metadata records
 the actual Python patch version and CPU platform.
 
 Run scientific correctness checks:
 
 ```bash
-RL/.venv/bin/python -m unittest discover -s RL/miniproject -v
+environment/.venv/bin/python -m unittest discover -s . -v
 ```
 
 Rebuild plots and tables from completed data:
 
 ```bash
-RL/.venv/bin/python RL/report/scripts/lunarlander_pilot.py \
-  --input RL/miniproject/outputs/pilot-20261005 \
-  --output RL/report/generated/lunarlander-pilot-20261005
+environment/.venv/bin/python lunarlander_pilot.py \
+  --input outputs/pilot-20261005 \
+  --output generated/lunarlander-pilot-20261005
 ```
 
 Independently replay final policies and verify saved state/action/Q alignment and
 direct discounted reward sums (writes new audit artifacts, once per run):
 
 ```bash
-RL/.venv/bin/python RL/miniproject/audit_calibration.py \
-  --pilot RL/miniproject/outputs/pilot-new --workers 4
+environment/.venv/bin/python audit_calibration.py \
+  --pilot outputs/pilot-new --workers 4
 ```
 
 Run another complete pilot into a **new** directory, then its final long-return
 check. Existing run data is never silently overwritten:
 
 ```bash
-RL/.venv/bin/python RL/miniproject/run_pilot.py \
-  --output RL/miniproject/outputs/pilot-new --workers 4
-RL/.venv/bin/python RL/miniproject/calibration.py \
-  --pilot RL/miniproject/outputs/pilot-new --workers 4
+environment/.venv/bin/python run_pilot.py \
+  --output outputs/pilot-new --workers 4
+environment/.venv/bin/python calibration.py \
+  --pilot outputs/pilot-new --workers 4
 ```
 
 To run a single different configuration, copy/edit a configuration JSON, then:
 
 ```bash
-RL/.venv/bin/python RL/miniproject/experiment.py \
-  --config RL/miniproject/configs/pilot.json \
+environment/.venv/bin/python experiment.py \
+  --config configs/pilot.json \
   --algorithm td3 --layer-norm 1 --seed 10 \
-  --output RL/miniproject/outputs/new-td3-ln1-seed10
+  --output outputs/new-td3-ln1-seed10
 ```
 
 Checkpoints are for inference and diagnostics; they do not contain the replay
@@ -155,3 +151,14 @@ deadline saves active runs and leaves an explicit incomplete status if necessary
 The completed 500k study is analysed in [STUDY_RESULTS.md](STUDY_RESULTS.md).
 `review_study.py` regenerates the runtime/seed review and focused plots from the
 saved study data; it does not train or select a best checkpoint.
+
+## Collaboration
+
+Clone this repository directly; access to the parent RL repository is unnecessary.
+Commit and push changes here. The parent RL repository pins a commit through its
+`miniproject/` submodule and must update that pointer separately.
+
+Raw experiment outputs, checkpoints, TensorBoard logs and generated figures are
+ignored and are not included in a fresh clone. The tracked results notes describe
+completed local runs; regenerating their plots requires the corresponding raw
+data. The shared report remains on Samskrift.

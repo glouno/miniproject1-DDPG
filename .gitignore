@@ -1,0 +1,41 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.Spotlight-V100
+.Trashes
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments and local configuration
+.venv/
+**/.venv/
+.env
+.env.*
+
+# Jupyter and course-generated artifacts
+.ipynb_checkpoints/
+outputs/
+runs/
+lightning_logs/
+
+# Editors
+.vscode/
+.idea/
+
+# Superseded environment bundle retained temporarily as a rollback copy
+/tp-rl-uv/
+
+# course git module
+/master-mind-rl/
+
+# Generated figures
+generated/

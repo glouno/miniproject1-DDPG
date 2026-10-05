@@ -1,9 +1,9 @@
 # macOS and WSL execution
 
-The RL Git repository is at `/Users/glouno/Documents/Sorbonne/RL` on the Mac and
-`/home/glouno/src/Sorbonne/RL` on `paris-devbox`. Both use the root `pyproject.toml`
-and `uv.lock`, with a separately created `.venv` on each machine. The root
-manifest now pins the numerical/runtime packages used in the pilot:
+Clone `miniproject1-DDPG` on each machine and run commands from its root.
+The locked manifest is `environment/pyproject.toml`, with
+`environment/uv.lock` and a separate `environment/.venv` on each machine.
+The lock records the runtime versions used in the pilot:
 
 ```toml
 dependencies = [
@@ -15,7 +15,7 @@ dependencies = [
 ]
 ```
 
-`uv sync --locked` succeeded on Apple Silicon macOS and x86-64 WSL. Default
+`uv sync --locked --project environment` succeeded on Apple Silicon macOS and x86-64 WSL. Default
 PyPI PyTorch wheels provided macOS CPU/MPS and Linux CUDA 13.0 builds; WSL's
 Windows NVIDIA driver 616.56 ran a real CUDA tensor operation successfully.
 No platform-specific index override is required for these tested machines.
@@ -29,30 +29,30 @@ See [NVIDIA's WSL guide](https://docs.nvidia.com/cuda/wsl-user-guide/index.html)
 
 ## Setup and checks
 
-From the RL repository:
+From this repository root:
 
 ```bash
-uv sync --locked
-uv pip check --python .venv/bin/python
-uv run --locked python -m unittest discover -s miniproject -v
-uv run --locked python -m ipykernel install --user \
-  --name sorbonne-rl --display-name "Python (Sorbonne RL)"
-uv run --locked jupyter lab
+uv sync --locked --project environment
+uv pip check --python environment/.venv/bin/python
+uv run --locked --project environment python -m unittest discover -s . -v
+uv run --locked --project environment python -m ipykernel install --user \
+  --name miniproject1-ddpg --display-name "Python (miniproject1-DDPG)"
+uv run --locked --project environment jupyter lab
 ```
 
 The analysis notebook needs the ignored pilot data in addition to Git sources.
 It was copied separately to WSL and executed successfully. No virtual environment
 or authentication files were copied. Generated data and figures remain ignored.
 If an old environment claims Box2D is installed but imports fail, restore the
-locked wheel with `uv sync --locked --reinstall-package box2d` and rerun the checks.
+locked wheel with `uv sync --locked --project environment --reinstall-package box2d` and rerun the checks.
 A normal clean WSL installation did not require that repair.
 
 ## Training devices
 
 ```bash
-uv run --locked python miniproject/experiment.py \
-  --config miniproject/configs/pilot.json --algorithm td3 --layer-norm 1 \
-  --seed 10 --device cpu --output miniproject/outputs/new-cpu-run
+uv run --locked --project environment python experiment.py \
+  --config configs/pilot.json --algorithm td3 --layer-norm 1 \
+  --seed 10 --device cpu --output outputs/new-cpu-run
 ```
 
 Change `--device` to `cuda` on WSL or `mps` on the Mac. CPU is the default;
@@ -66,8 +66,8 @@ Keep the final scientific study on one backend and record it in run metadata.
 A full factorial batch accepts worker count, training seeds and a custom config:
 
 ```bash
-uv run --locked python miniproject/run_pilot.py \
-  --output miniproject/outputs/new-study --workers 8 --device cpu \
+uv run --locked --project environment python run_pilot.py \
+  --output outputs/new-study --workers 8 --device cpu \
   --seeds 10 11 12 13 14 15 16 17
 ```
 
@@ -79,8 +79,8 @@ learning procedure and requires a separately specified experiment.
 ## Timing
 
 ```bash
-uv run --locked python miniproject/benchmark.py \
-  --output miniproject/outputs/new-cpu-benchmark \
+uv run --locked --project environment python benchmark.py \
+  --output outputs/new-cpu-benchmark \
   --device cpu --workers 1 4 8 --jobs 8 --steps 6000
 ```
 

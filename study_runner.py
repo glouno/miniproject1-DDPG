@@ -29,7 +29,7 @@ def prepare(out, config, seeds, workers, max_hours, probes_count=12, prefix_step
     shutil.copy2(config,out/'config.json')
     (source/'environment').mkdir();lock=Path(sys.prefix).parent/'uv.lock';assert lock.exists()
     shutil.copy2(lock,source/'environment/uv.lock')
-    for p in (base/'STUDY_PROTOCOL.md',base.parent/'pyproject.toml'):
+    for p in (base/'STUDY_PROTOCOL.md',base/'environment'/'pyproject.toml'):
         shutil.copy2(p,out/p.name)
     atomic_json(out/'probes.json',build_probes(cfg,probes_count,30000,prefix_steps))
     jobs=[dict(algorithm=a,layer_norm=bool(ln),seed=s,directory=f'{a}-ln{ln}-seed{s}')

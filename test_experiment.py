@@ -1,4 +1,4 @@
-"""Scientific correctness checks. Run: python -m unittest discover -s RL/miniproject."""
+"""Scientific correctness checks. Run: python -m unittest discover -s .."""
 import unittest
 import numpy as np
 import torch

@@ -2,7 +2,7 @@
 
 This protocol was written before launching the 12-run pilot. The pilot is for
 method validation and effect-size exploration; it is not the final report.
-The live team report remains the Samskrift project mapped in `../report/AGENTS.md`.
+The live team report remains [the shared Samskrift project](https://samskrift.com/project/7ce99927-c689-46cf-b78a-6ea0d8ecc0d8).
 
 ## Questions and controlled comparison
 
