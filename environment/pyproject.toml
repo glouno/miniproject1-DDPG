@@ -15,6 +15,7 @@ dependencies = [
     "pyyaml",
     "rl-mind==0.3.*",
     "scipy",
+    "tensorboard>=2.21.0",
     "torch",
     "tqdm",
 ]

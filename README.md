@@ -12,6 +12,36 @@ The notebook explains Q-values, matched Monte Carlo returns, normalization,
 the measured results and their limitations. It only reads saved experiment
 data and regenerates figures; it does not start training.
 
+## TensorBoard
+
+The long-study trainer writes live evaluation and training-episode curves to
+each run's `tensorboard/` directory. JSON/NPZ records remain authoritative;
+resume rebuilds the dashboard from recovered journals and purges stale events.
+Common-probe Q1 RMSE is pooled across probes, matching the report figures.
+
+Export the completed 40-run study without retraining (commands from the
+Sorbonne directory):
+
+```bash
+RL/.venv/bin/python RL/miniproject/tensorboard_logging.py \
+  --input RL/miniproject/outputs/study-20261005-500k
+RL/.venv/bin/tensorboard \
+  --logdir RL/miniproject/outputs/study-20261005-500k/tensorboard \
+  --host 127.0.0.1 --port 6006
+```
+
+Open http://127.0.0.1:6006. Run names encode algorithm, LN and training seed.
+`eval/on_policy/return` is the performance score; `bias_q1` and `rmse_q1`
+show calibration. `train/episode_return` includes exploration noise and is
+not the held-out evaluation score. Set smoothing to zero when inspecting
+actual measurements. Dashboard curves show individual runs; the report's
+seed-bootstrap confidence intervals are calculated separately by our analysis.
+Metadata is available in the Text tab. Past runs contain no recorded optimizer
+losses, gradients or activation histograms; the export does not invent them.
+Event logs are derived, ignored outputs and can be regenerated at any time.
+Changes to source/lockfiles intentionally prevent resuming a frozen old run;
+use its original environment/source if exact continuation is required.
+
 ## Completed pilot
 
 Four conditions: DDPG/TD3, each with critic LayerNorm off/on. Three training

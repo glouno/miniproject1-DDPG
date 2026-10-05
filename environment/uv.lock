@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = ">=3.11, <3.13"
 resolution-markers = [
     "python_full_version >= '3.12'",
@@ -2572,6 +2572,7 @@ dependencies = [
     { name = "rl-mind" },
     { name = "scipy", version = "1.17.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "scipy", version = "1.18.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+    { name = "tensorboard" },
     { name = "torch" },
     { name = "tqdm" },
 ]
@@ -2590,6 +2591,7 @@ requires-dist = [
     { name = "pyyaml" },
     { name = "rl-mind", specifier = "==0.3.*" },
     { name = "scipy" },
+    { name = "tensorboard", specifier = ">=2.21.0" },
     { name = "torch" },
     { name = "tqdm" },
 ]

@@ -26,6 +26,7 @@ from rl_mind.data import ReplayBuffer, Transitions
 from rl_mind.nn import soft_update
 from experiment import Config, initialize, bellman_target, resolve_device, synchronize
 from study_diagnostics import atomic_json, evaluate_study
+from tensorboard_logging import create_writer, log_metric, log_episode
 
 
 def atomic_torch(path, state, rotate=False):
@@ -133,6 +134,7 @@ def train_study(cfg, output, bank, horizons=(2500, 5000, 10000), resume=False, s
             f.flush(); os.fsync(f.fileno())
         atomic_torch(output/f'checkpoint-{step:07d}.pt', dict(config=asdict(cfg), actor=actor.state_dict(), critics=critics.state_dict(), step=step))
         histories.append(metric)
+        log_metric(writer, metric)
         print(f'{cfg.algorithm} LN={cfg.layer_norm} S{cfg.seed} step={step:,} '
               f'return={metric["on_policy"]["return"]:.1f} bias={metric["on_policy"]["bias_q1"]:.1f} '
               f'censored={metric["on_policy"]["censored"]} common_bias={metric["common_probe"]["bias_q1"]:.1f}', flush=True)
@@ -186,6 +188,7 @@ def train_study(cfg, output, bank, horizons=(2500, 5000, 10000), resume=False, s
             journal_sizes=sizes)
         atomic_torch(output/'resume.pt', state, rotate=True)
 
+    writer = create_writer(output)
     if not restoring:
         checkpoint(0)
         save_resume(0)
@@ -209,6 +212,7 @@ def train_study(cfg, output, bank, horizons=(2500, 5000, 10000), resume=False, s
         episode_length += 1
         obs = next_obs
         if terminated or truncated:
+            log_episode(writer, dict(step=step, reward=episode_return, length=episode_length))
             with (output/'training_episodes.jsonl').open('a') as f:
                 f.write(json.dumps(dict(step=step, reward=episode_return, length=episode_length,
                                         terminated=bool(terminated), truncated=bool(truncated)))+'\n')
@@ -263,10 +267,12 @@ def train_study(cfg, output, bank, horizons=(2500, 5000, 10000), resume=False, s
                 updated_at=datetime.now(timezone.utc).isoformat(),elapsed_seconds=elapsed_base+time.monotonic()-started))
         if stop_requested or (stop_after is not None and step >= stop_after):
             save_resume(step)
+            writer.close()
             env.close()
             signal.signal(signal.SIGTERM, previous_handler)
             atomic_json(output/'progress.json',dict(status='interrupted',step=step,max_steps=cfg.max_steps))
             return dict(status='interrupted',step=step)
+    writer.close()
     env.close()
     expected_rounds = max(0, cfg.max_steps - cfg.learning_starts + 1) * cfg.gradient_steps_per_transition
     assert updates == expected_rounds
