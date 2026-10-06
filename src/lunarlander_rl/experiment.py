@@ -13,10 +13,9 @@ import hashlib
 import importlib.metadata
 import json
 from pathlib import Path
+from .paths import dependency_lock, snapshot_source
 import platform
 import random
-import shutil
-import sys
 import time
 
 import gymnasium as gym
@@ -261,13 +260,8 @@ def train(cfg, output):
     if output.exists() and any(output.iterdir()):
         raise FileExistsError(f'Refusing to overwrite run: {output}')
     output.mkdir(parents=True, exist_ok=True)
-    source_dir = output / 'source'
-    source_dir.mkdir()
-    for source in Path(__file__).parent.glob('*.py'):
-        shutil.copy2(source, source_dir / source.name)
-    active_lock = Path(sys.prefix).parent / 'uv.lock'
-    if not active_lock.exists():
-        active_lock = Path(__file__).parent/'environment'/'uv.lock'
+    snapshot_source(output / 'source')
+    active_lock = dependency_lock()
     versions = {name: importlib.metadata.version(name)
                 for name in ('rl-mind', 'gymnasium', 'torch', 'numpy', 'Box2D')}
     metadata = dict(config=asdict(cfg), versions=versions, python=platform.python_version(),

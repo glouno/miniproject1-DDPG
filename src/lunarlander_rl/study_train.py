@@ -12,11 +12,11 @@ import importlib.metadata
 import json
 import os
 from pathlib import Path
+from .paths import dependency_lock, snapshot_source
 import platform
 import random
 import shutil
 import signal
-import sys
 import time
 import numpy as np
 import torch
@@ -24,9 +24,9 @@ from torch import nn
 from rl_mind.core import Action
 from rl_mind.data import ReplayBuffer, Transitions
 from rl_mind.nn import soft_update
-from experiment import Config, initialize, bellman_target, resolve_device, synchronize
-from study_diagnostics import atomic_json, evaluate_study
-from tensorboard_logging import create_writer, log_metric, log_episode
+from .experiment import Config, initialize, bellman_target, resolve_device, synchronize
+from .study_diagnostics import atomic_json, evaluate_study
+from .tensorboard_logging import create_writer, log_metric, log_episode
 
 
 def atomic_torch(path, state, rotate=False):
@@ -80,13 +80,8 @@ def train_study(cfg, output, bank, horizons=(2500, 5000, 10000), resume=False, s
     if output.exists() and any(output.iterdir()) and not restoring:
         raise FileExistsError(f'Refusing to overwrite run: {output}')
     output.mkdir(parents=True, exist_ok=True)
-    source_dir = output / 'source'
-    source_dir.mkdir(exist_ok=True)
-    for source in Path(__file__).parent.glob('*.py'):
-        shutil.copy2(source, source_dir / source.name)
-    active_lock = Path(sys.prefix).parent / 'uv.lock'
-    if not active_lock.exists():
-        active_lock = Path(__file__).parent/'environment'/'uv.lock'
+    snapshot_source(output / 'source')
+    active_lock = dependency_lock()
     versions = {name: importlib.metadata.version(name)
                 for name in ('rl-mind', 'gymnasium', 'torch', 'numpy', 'Box2D')}
     metadata = dict(config=asdict(cfg), versions=versions, python=platform.python_version(),

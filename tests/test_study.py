@@ -6,9 +6,9 @@ import tempfile
 import unittest
 import numpy as np
 import torch
-from experiment import Config, train, load_checkpoint
-from study_diagnostics import build_probes, evaluate_study
-from study_train import train_study
+from lunarlander_rl.experiment import Config, train, load_checkpoint
+from lunarlander_rl.study_diagnostics import build_probes, evaluate_study
+from lunarlander_rl.study_train import train_study
 
 
 class StudyChecks(unittest.TestCase):
@@ -45,7 +45,7 @@ class StudyChecks(unittest.TestCase):
             self.assertEqual(a['on_policy'],b['on_policy']);self.assertEqual(a['common_probe'],b['common_probe'])
 
     def test_all_trajectories_and_direct_returns(self):
-        from experiment import initialize
+        from lunarlander_rl.experiment import initialize
         cfg=replace(self.config(),train_horizon=10,diagnostic_horizon=50)
         env,actor,critics=initialize(cfg);env.close()
         bank=build_probes(cfg,count=2,prefix_steps=5)

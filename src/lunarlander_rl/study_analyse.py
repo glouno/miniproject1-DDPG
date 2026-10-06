@@ -7,7 +7,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import numpy as np
-from study_diagnostics import atomic_json
+from .study_diagnostics import atomic_json
 
 
 def interval(values):
@@ -95,6 +95,10 @@ def analyse(root):
     print('ANALYSIS COMPLETE',out,flush=True)
 
 
-if __name__=='__main__':
+def main():
     parser=argparse.ArgumentParser();parser.add_argument('--input',type=Path,required=True)
     analyse(parser.parse_args().input.resolve())
+
+
+if __name__ == '__main__':
+    main()

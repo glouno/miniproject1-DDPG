@@ -1,6 +1,6 @@
 """Run the predefined 2 algorithms x 2 normalization settings x 3 seeds pilot.
 
-Usage: <locked-python> run_pilot.py --output outputs/pilot-20261005 --workers 4
+Usage: uv run --locked lander-pilot --output outputs/pilot-20261005 --workers 4
 Each child uses one CPU thread. Existing run directories are never overwritten.
 """
 import argparse
@@ -10,6 +10,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+from .paths import project_root
 import subprocess
 import sys
 
@@ -25,7 +26,7 @@ def main():
     base = Path(__file__).resolve().parent
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=True)
-    config = (args.config or base / 'configs' / 'pilot.json').resolve()
+    config = (args.config or project_root() / 'configs' / 'pilot.json').resolve()
     assert args.workers > 0 and len(set(args.seeds)) == len(args.seeds)
     jobs = [(algo, ln, seed) for seed in args.seeds for algo in ('ddpg', 'td3') for ln in (0, 1)]
     manifest = dict(stage='exploratory pilot', expected_runs=len(jobs), seeds=args.seeds, device=args.device,
@@ -43,7 +44,7 @@ def main():
     def run(job):
         algo, ln, seed = job
         name = f'{algo}-ln{ln}-seed{seed}'
-        command = [sys.executable, str(base/'experiment.py'), '--config', str(config),
+        command = [sys.executable, '-m', 'lunarlander_rl.experiment', '--config', str(config),
                    '--algorithm', algo, '--layer-norm', str(ln), '--seed', str(seed),
                    '--output', str(output/name), '--device', args.device]
         env = dict(os.environ, OMP_NUM_THREADS='1', OPENBLAS_NUM_THREADS='1', MKL_NUM_THREADS='1')

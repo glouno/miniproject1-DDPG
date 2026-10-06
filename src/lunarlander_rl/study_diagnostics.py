@@ -4,7 +4,7 @@ import json
 import os
 import numpy as np
 import torch
-from experiment import discounted_returns, make_env
+from .experiment import discounted_returns, make_env
 
 
 def atomic_json(path, value):

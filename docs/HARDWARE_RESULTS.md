@@ -68,7 +68,7 @@ across backends/OSes; use one backend for the final controlled study.
 [hardware-benchmarks.json](hardware-benchmarks.json) preserves configurations,
 source hashes, timing summaries and per-job outcomes. Full raw runs and source
 snapshots remain in ignored `outputs/benchmark-*` directories. Reproduce with
-[benchmark.py](benchmark.py); commands are in [PORTABILITY.md](PORTABILITY.md).
+[benchmark.py](../src/lunarlander_rl/benchmark.py); commands are in [PORTABILITY.md](PORTABILITY.md).
 The original scientific pilot is unchanged.
 
 The WSL environment passed dependency checks, all four scientific unit checks,

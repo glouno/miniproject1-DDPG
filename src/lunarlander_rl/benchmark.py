@@ -10,6 +10,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+from .paths import project_root
 import platform
 import subprocess
 import sys
@@ -28,7 +29,7 @@ def main():
     base = Path(__file__).resolve().parent
     out = args.output.resolve()
     out.mkdir(parents=True, exist_ok=False)
-    config = json.loads((base/'configs/pilot.json').read_text())
+    config = json.loads((project_root()/'configs/pilot.json').read_text())
     config.update(max_steps=args.steps, learning_starts=1000, eval_interval=args.steps,
                   eval_episodes=2, diagnostic_horizon=1000, device=args.device)
     config_path = out/'config.json'
@@ -45,7 +46,7 @@ def main():
         batch_dir.mkdir()
         def launch(index):
             name = f'job-{index}'
-            command = [sys.executable, str(base/'experiment.py'), '--config', str(config_path),
+            command = [sys.executable, '-m', 'lunarlander_rl.experiment', '--config', str(config_path),
                        '--algorithm', 'td3', '--layer-norm', '1', '--seed', str(index),
                        '--output', str(batch_dir/name)]
             with (batch_dir/f'{name}.log').open('w') as log:

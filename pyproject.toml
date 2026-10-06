@@ -1,0 +1,47 @@
+[project]
+name = "miniproject1-ddpg"
+version = "0.1.0"
+description = "LunarLander DDPG/TD3 experiments and learning notebooks"
+readme = "README.md"
+requires-python = ">=3.11, <3.13"
+dependencies = [
+    "gymnasium[box2d]",
+    "matplotlib",
+    "mazemdp",
+    "numpy",
+    "omegaconf",
+    "optuna",
+    "pyyaml",
+    "rl-mind==0.3.*",
+    "scipy",
+    "tensorboard>=2.21.0",
+    "torch",
+    "tqdm",
+]
+
+[dependency-groups]
+dev = ["ipywidgets", "jupyter", "jupyterlab"]
+
+[project.scripts]
+lander-train = "lunarlander_rl.experiment:main"
+lander-pilot = "lunarlander_rl.run_pilot:main"
+lander-analyse-pilot = "lunarlander_rl.lunarlander_pilot:main"
+lander-calibrate = "lunarlander_rl.calibration:main"
+lander-audit = "lunarlander_rl.audit_calibration:main"
+lander-benchmark = "lunarlander_rl.benchmark:main"
+lander-study = "lunarlander_rl.study_runner:main"
+lander-study-status = "lunarlander_rl.study_status:main"
+lander-study-analyse = "lunarlander_rl.study_analyse:main"
+lander-study-review = "lunarlander_rl.review_study:main"
+lander-launch-study = "lunarlander_rl.launch_study:main"
+lander-tensorboard-export = "lunarlander_rl.tensorboard_logging:main"
+
+[build-system]
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/lunarlander_rl"]
+
+[tool.hatch.build.targets.sdist]
+include = ["src/", "notebooks/", "tests/", "configs/", "docs/", "README.md", "pyproject.toml", "uv.lock", ".python-version"]

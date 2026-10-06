@@ -1,6 +1,6 @@
 """Supplemental final-checkpoint calibration including hovering trajectories.
 
-Run after the pilot: python calibration.py --pilot outputs/pilot-20261005
+Run after the pilot: uv run --locked lander-calibrate --pilot outputs/pilot-20261005
 All trajectories are retained. Compare 2,500/5,000/10,000-step return horizons
 from the SAME rollout, sampling only states in its first 1,000 transitions.
 For nonterminating trajectories these are finite-return approximations, not
@@ -17,7 +17,7 @@ import sys
 
 import numpy as np
 import torch
-from experiment import discounted_returns, load_checkpoint, make_env
+from .experiment import discounted_returns, load_checkpoint, make_env
 
 
 def calibrate(run):
@@ -110,7 +110,7 @@ def main():
     assert all((run/'summary.json').exists() for run in runs), 'Pilot is incomplete'
     env=dict(os.environ,OMP_NUM_THREADS='1',OPENBLAS_NUM_THREADS='1',MKL_NUM_THREADS='1')
     def launch(run):
-        return subprocess.run([sys.executable,str(Path(__file__).resolve()),'--run',str(run)],env=env).returncode
+        return subprocess.run([sys.executable,'-m','lunarlander_rl.calibration','--run',str(run.resolve())],env=env).returncode
     with ThreadPoolExecutor(max_workers=args.workers) as pool:
         results=list(pool.map(launch,runs))
     assert all(result==0 for result in results), 'Read failed calibration output'

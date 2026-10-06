@@ -39,3 +39,7 @@ lightning_logs/
 
 # Generated figures
 generated/
+
+# Package builds
+/dist/
+/build/

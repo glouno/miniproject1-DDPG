@@ -2,6 +2,7 @@
 import argparse
 import os
 from pathlib import Path
+from .paths import frozen_command
 import plistlib
 import subprocess
 import sys
@@ -18,9 +19,9 @@ def main():
     agent.parent.mkdir(parents=True,exist_ok=True)
     if agent.exists():
         raise FileExistsError(f'Existing job: {agent}; use launchctl kickstart to resume it')
-    plist=dict(Label=args.label,ProgramArguments=['/usr/bin/caffeinate','-i','-s',sys.executable,'-u',
-                str(root/'source/study_runner.py'),'--output',str(root)],
-               WorkingDirectory=str(Path(__file__).resolve().parent.parent),
+    plist=dict(Label=args.label,ProgramArguments=['/usr/bin/caffeinate','-i','-s',
+                *frozen_command(root/'source','study_runner'),'--output',str(root)],
+               WorkingDirectory=str(root/'source'),
                RunAtLoad=False,KeepAlive=False,ProcessType='Standard',
                StandardOutPath=str(root/'supervisor.log'),StandardErrorPath=str(root/'supervisor-error.log'),
                EnvironmentVariables=dict(OMP_NUM_THREADS='1',OPENBLAS_NUM_THREADS='1',MKL_NUM_THREADS='1',

@@ -33,4 +33,4 @@ All trajectories were retained. Final censor counts and maximum observed horizon
 This local working analysis is not a replacement for the live shared Samskrift report.
 
 
-Reproduce this review with `python miniproject/review_study.py --input miniproject/outputs/study-20261005-500k`. The raw 1.2 GiB study directory is ignored by Git and is needed to regenerate the figures. All 40 final models passed a reload audit: 25,114 saved Q pairs matched and 720 independent discounted-return checks passed.
+Reproduce this review with `uv run --locked lander-study-review --input outputs/study-20261005-500k`. The raw 1.2 GiB study directory is ignored by Git and is needed to regenerate the figures. All 40 final models passed a reload audit: 25,114 saved Q pairs matched and 720 independent discounted-return checks passed.

@@ -1,8 +1,8 @@
-"""Scientific correctness checks. Run: python -m unittest discover -s .."""
+"""Scientific checks. Run: uv run --locked python -m unittest discover -s tests."""
 import unittest
 import numpy as np
 import torch
-from experiment import Actor, Critic, Config, bellman_target, discounted_returns, initialize
+from lunarlander_rl.experiment import Actor, Critic, Config, bellman_target, discounted_returns, initialize
 
 
 class ScientificChecks(unittest.TestCase):

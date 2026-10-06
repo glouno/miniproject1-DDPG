@@ -57,9 +57,13 @@ def export_study(root, destination):
     print(f"Exported {len(manifest['jobs'])} runs to {destination.resolve()}")
 
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--input', required=True, type=Path)
     parser.add_argument('--output', type=Path)
     args = parser.parse_args()
     export_study(args.input, args.output or args.input/'tensorboard')
+
+
+if __name__ == '__main__':
+    main()

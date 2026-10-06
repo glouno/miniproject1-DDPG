@@ -11,8 +11,9 @@ import subprocess
 import sys
 import threading
 import time
-from experiment import Config
-from study_diagnostics import atomic_json, build_probes
+from .experiment import Config
+from .paths import dependency_lock, frozen_command, project_root, snapshot_source
+from .study_diagnostics import atomic_json, build_probes
 
 
 def sha(path):
@@ -23,20 +24,20 @@ def prepare(out, config, seeds, workers, max_hours, probes_count=12, prefix_step
     out.mkdir(parents=True,exist_ok=False)
     source=out/'source';source.mkdir();(out/'logs').mkdir()
     base=Path(__file__).resolve().parent
-    for p in base.glob('*.py'):
-        shutil.copy2(p,source/p.name)
+    snapshot_source(source)
     settings=json.loads(config.read_text());cfg=Config(**settings);cfg.validate();assert cfg.device=='cpu'
     shutil.copy2(config,out/'config.json')
-    (source/'environment').mkdir();lock=Path(sys.prefix).parent/'uv.lock';assert lock.exists()
-    shutil.copy2(lock,source/'environment/uv.lock')
-    for p in (base/'STUDY_PROTOCOL.md',base/'environment'/'pyproject.toml'):
+    lock=dependency_lock();assert lock.exists()
+    shutil.copy2(lock,source/'uv.lock')
+    shutil.copy2(project_root()/'pyproject.toml',source/'pyproject.toml')
+    for p in (project_root()/'docs'/'STUDY_PROTOCOL.md',project_root()/'pyproject.toml'):
         shutil.copy2(p,out/p.name)
     atomic_json(out/'probes.json',build_probes(cfg,probes_count,30000,prefix_steps))
     jobs=[dict(algorithm=a,layer_norm=bool(ln),seed=s,directory=f'{a}-ln{ln}-seed{s}')
           for s in seeds for a in ('ddpg','td3') for ln in (0,1)]
     manifest=dict(git_revision=subprocess.check_output(['git','rev-parse','HEAD'],text=True,cwd=base).strip(),stage='frozen main study',created_at=datetime.now(timezone.utc).isoformat(),
                   seeds=seeds,workers=workers,max_hours=max_hours,expected_runs=len(jobs),config=settings,jobs=jobs,
-                  source_sha256={p.name:sha(p) for p in source.glob('*.py')},lock_sha256=sha(lock),
+                  source_sha256={str(p.relative_to(source)):sha(p) for p in source.rglob('*.py')},lock_sha256=sha(lock),
                   config_sha256=sha(out/'config.json'),probes_sha256=sha(out/'probes.json'),
                   interpreter=sys.executable,protocol_sha256=sha(out/'STUDY_PROTOCOL.md'))
     atomic_json(out/'manifest.json',manifest)
@@ -50,7 +51,7 @@ def run(out):
         assert sha(source/name)==h, f'Frozen source changed: {name}'
     assert sha(out/'config.json')==manifest['config_sha256']
     assert sha(out/'probes.json')==manifest['probes_sha256']
-    assert sha(Path(sys.prefix).parent/'uv.lock')==manifest['lock_sha256']
+    assert sha(dependency_lock())==manifest['lock_sha256']
     started=time.monotonic();deadline=started+manifest['max_hours']*3600
     status=dict(status='running',runner_pid=os.getpid(),started_at=datetime.now(timezone.utc).isoformat(),jobs={})
     lock=threading.Lock()
@@ -67,7 +68,7 @@ def run(out):
             update(name,dict(status='complete',reused=True));return name,True
         if time.monotonic()>=deadline:
             update(name,dict(status='not_started_deadline'));return name,False
-        command=[sys.executable,str(source/'study_train.py'),'--config',str(out/'config.json'),
+        command=frozen_command(source,'study_train')+['--config',str(out/'config.json'),
                  '--probes',str(out/'probes.json'),'--algorithm',job['algorithm'],
                  '--layer-norm',str(int(job['layer_norm'])),'--seed',str(job['seed']),'--output',str(directory)]
         env=dict(os.environ,OMP_NUM_THREADS='1',OPENBLAS_NUM_THREADS='1',MKL_NUM_THREADS='1',PYTHONUNBUFFERED='1')
@@ -75,7 +76,7 @@ def run(out):
             cmd=command+(['--resume'] if (directory/'resume.pt').exists() or (directory/'resume.previous.pt').exists() else [])
             with (out/'logs'/f'{name}.log').open('a') as log:
                 log.write(f'\nATTEMPT {attempt} {datetime.now(timezone.utc).isoformat()}\n');log.flush()
-                process=subprocess.Popen(cmd,env=env,stdout=log,stderr=subprocess.STDOUT)
+                process=subprocess.Popen(cmd,cwd=source,env=env,stdout=log,stderr=subprocess.STDOUT)
                 update(name,dict(status='running',pid=process.pid,attempt=attempt))
                 print('START',name,'PID',process.pid,flush=True)
                 try:
@@ -101,7 +102,7 @@ def run(out):
     status['elapsed_seconds']=time.monotonic()-started
     atomic_json(out/'status.json',status)
     if successful:
-        result=subprocess.run([sys.executable,str(source/'study_analyse.py'),'--input',str(out)],env=dict(os.environ,MPLBACKEND='Agg'))
+        result=subprocess.run(frozen_command(source,'study_analyse')+['--input',str(out)],cwd=source,env=dict(os.environ,MPLBACKEND='Agg'))
         status['status']='complete' if result.returncode==0 else 'training_complete_analysis_failed'
         atomic_json(out/'status.json',status)
     print('STUDY STATUS',status['status'],flush=True)

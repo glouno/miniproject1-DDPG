@@ -1,6 +1,6 @@
 """Replay saved final policies and independently verify stored Q/MC pair alignment.
 
-Usage: python audit_calibration.py --pilot outputs/pilot-20261005 --workers 4
+Usage: uv run --locked lander-audit --pilot outputs/pilot-20261005 --workers 4
 Writes reward traces for inspection without replacing any metrics/checkpoints.
 Checks direct discounted dot products at sampled first/middle/last states.
 """
@@ -13,7 +13,7 @@ import subprocess
 import sys
 import numpy as np
 import torch
-from experiment import load_checkpoint,make_env
+from .experiment import load_checkpoint,make_env
 
 
 def audit(run):
@@ -79,7 +79,7 @@ def main():
     runs=[args.pilot/job['directory'] for job in manifest['jobs']]
     env=dict(os.environ,OMP_NUM_THREADS='1',OPENBLAS_NUM_THREADS='1',MKL_NUM_THREADS='1')
     def launch(run):
-        return subprocess.run([sys.executable,str(Path(__file__).resolve()),'--run',str(run)],env=env).returncode
+        return subprocess.run([sys.executable,'-m','lunarlander_rl.audit_calibration','--run',str(run.resolve())],env=env).returncode
     with ThreadPoolExecutor(max_workers=args.workers) as pool:
         results=list(pool.map(launch,runs))
     assert all(code==0 for code in results),'Some audits failed'
