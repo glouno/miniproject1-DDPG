@@ -31,6 +31,13 @@ from rl_mind.nn import soft_update
 class Config:
     algorithm: str = "td3"
     layer_norm: bool = False
+    actor_layer_norm: bool = False
+    critic_layer_norm: bool | None = None  # None preserves old checkpoint semantics.
+    isolated_initialization: bool = False
+    instrumentation: bool = False
+    early_eval_interval: int = 0
+    early_eval_until: int = 50_000
+    resume_interval: int = 0  # 0 preserves evaluation-only checkpoint cadence.
     seed: int = 0
     env_id: str = "LunarLander-v3"
     continuous: bool = True
@@ -66,6 +73,7 @@ class Config:
         assert self.algorithm in {"ddpg", "td3"}
         assert self.continuous and 0 < self.gamma < 1 and 0 < self.tau <= 1
         assert self.max_steps > 0 and self.eval_interval > 0
+        assert self.early_eval_interval >= 0 and self.resume_interval >= 0 and self.early_eval_until >= 0
         assert self.replay_capacity >= max(self.learning_starts, self.batch_size)
         assert self.learning_starts >= self.batch_size
         assert self.diagnostic_horizon >= self.train_horizon
@@ -87,9 +95,9 @@ def mlp(input_size, hidden, output_size, layer_norm=False):
 
 
 class Actor(nn.Module):
-    def __init__(self, obs_dim, hidden, low, high):
+    def __init__(self, obs_dim, hidden, low, high, layer_norm=False):
         super().__init__()
-        self.model = mlp(obs_dim, hidden, len(low))
+        self.model = mlp(obs_dim, hidden, len(low), layer_norm)
         self.register_buffer("low", torch.as_tensor(low, dtype=torch.float32))
         self.register_buffer("high", torch.as_tensor(high, dtype=torch.float32))
 
@@ -230,9 +238,19 @@ def initialize(cfg, device=None):
     np.random.seed(cfg.seed)
     random.seed(cfg.seed)
     env = make_env(cfg, cfg.train_horizon)
-    actor = Actor(8, cfg.actor_hidden, env.action_space.low, env.action_space.high)
-    critics = nn.ModuleList([Critic(8, 2, cfg.critic_hidden, cfg.layer_norm)
-                            for _ in range(2 if cfg.algorithm == 'td3' else 1)])
+    norm = cfg.layer_norm if cfg.critic_layer_norm is None else cfg.critic_layer_norm
+    if cfg.isolated_initialization:
+        with torch.random.fork_rng(devices=[]):
+            torch.manual_seed(cfg.seed + 100_000)
+            actor = Actor(8, cfg.actor_hidden, env.action_space.low, env.action_space.high, cfg.actor_layer_norm)
+        with torch.random.fork_rng(devices=[]):
+            torch.manual_seed(cfg.seed + 200_000)
+            critics = nn.ModuleList([Critic(8, 2, cfg.critic_hidden, norm)
+                                    for _ in range(2 if cfg.algorithm == 'td3' else 1)])
+    else:
+        actor = Actor(8, cfg.actor_hidden, env.action_space.low, env.action_space.high, cfg.actor_layer_norm)
+        critics = nn.ModuleList([Critic(8, 2, cfg.critic_hidden, norm)
+                                for _ in range(2 if cfg.algorithm == 'td3' else 1)])
     device = resolve_device(cfg.device) if device is None else torch.device(device)
     return env, actor.to(device), critics.to(device)
 
