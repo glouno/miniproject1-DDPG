@@ -19,14 +19,17 @@ validated, so the scientific queue uses CPU throughout.
 Run from the mini-project directory. The output directory must be new:
 
 ```sh
-uv run --locked lander-followup --prepare --preset full --workers 8 --output outputs/ln-followup-20261007
-uv run --locked lander-prepare-wsl --output outputs/ln-followup-20261007
+uv run --locked lander-followup --prepare --preset full --workers 8 --output outputs/ln-followup-20261007-cpu-scaled
+uv run --locked lander-prepare-wsl --output outputs/ln-followup-20261007-cpu-scaled
 ```
 
 The manifest hashes all frozen Python sources, the dependency lock, protocol,
 probe bank and individual configs. Workers run those copies, not the editable
 checkout. The active lock must match. Don't upgrade the environment during a run.
-Git revision and content hashes are separate provenance records.
+Git revision and content hashes are separate provenance records. Commit and push
+all tracked changes, synchronize WSL with that revision, and verify clean Git
+status before preparing this queue. The older `ln-followup-20261007` queue is
+preserved; do not launch its superseded service or change its hashes.
 
 ## Launch, monitor, stop, resume
 
@@ -82,7 +85,7 @@ A backup is only verified after reading its records/checkpoints successfully.
 On WSL:
 
 ```sh
-uv run --locked tensorboard --logdir outputs/ln-followup-20261007 --host 127.0.0.1 --port 6006
+uv run --locked tensorboard --logdir outputs/ln-followup-20261007-cpu-scaled --host 127.0.0.1 --port 6006
 ```
 
 On the Mac, use local 6007 if the old TensorBoard already occupies 6006:
@@ -97,16 +100,16 @@ seed bootstrap intervals, paired contrasts and Holm-adjusted sign-flip p-values.
 For monitoring only, the analysis also supports completed subsets:
 
 ```sh
-cd /home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007/source
-/home/glouno/src/Sorbonne/RL/miniproject/.venv/bin/python -m lunarlander_rl.followup_analyse --input /home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007 --stage A
+cd /home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/source
+/home/glouno/src/Sorbonne/RL/miniproject/.venv/bin/python -m lunarlander_rl.followup_analyse --input /home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled --stage A
 ```
 
 Derive prespecified trajectory examples and action maps offline from frozen
 checkpoints (training seeds 20–22 for A, 30–32 for B; four fixed checkpoints):
 
 ```sh
-cd /home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007/source
-/home/glouno/src/Sorbonne/RL/miniproject/.venv/bin/python -m lunarlander_rl.followup_examples --input /home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007 --stage A --maps
+cd /home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/source
+/home/glouno/src/Sorbonne/RL/miniproject/.venv/bin/python -m lunarlander_rl.followup_examples --input /home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled --stage A --maps
 ```
 
 The map holds a replayable state fixed and evaluates a 9×9 continuous-action
