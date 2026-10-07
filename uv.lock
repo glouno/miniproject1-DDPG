@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = ">=3.11, <3.13"
 resolution-markers = [
     "python_full_version >= '3.12'",
@@ -1381,6 +1381,7 @@ dependencies = [
     { name = "numpy", version = "2.5.3", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "omegaconf" },
     { name = "optuna" },
+    { name = "psutil" },
     { name = "pyyaml" },
     { name = "rl-mind" },
     { name = "scipy", version = "1.17.1", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
@@ -1405,6 +1406,7 @@ requires-dist = [
     { name = "numpy" },
     { name = "omegaconf" },
     { name = "optuna" },
+    { name = "psutil" },
     { name = "pyyaml" },
     { name = "rl-mind", specifier = "==0.3.*" },
     { name = "scipy" },

@@ -12,7 +12,8 @@ def main():
     p.add_argument('--name',default='rl-ln-followup-20261007');a=p.parse_args()
     if sys.platform!='linux':p.error('Run this installer on WSL/Linux')
     if not re.fullmatch(r'[a-zA-Z0-9_-]+',a.name):p.error('Invalid service name')
-    out=a.output.resolve();verify(out)
+    out=a.output.resolve();manifest=verify(out)
+    cpu_environment=' CUDA_VISIBLE_DEVICES=' if all(j['config']['device']=='cpu' for j in manifest['jobs']) else ''
     if any(c.isspace() for c in str(out)+sys.executable):p.error('Service paths must contain no whitespace')
     unit=Path.home()/'.config/systemd/user'/f'{a.name}.service';unit.parent.mkdir(parents=True,exist_ok=True)
     if unit.exists():p.error(f'Existing service preserved: {unit}')
@@ -23,7 +24,7 @@ Description=Frozen RL actor/critic LayerNorm follow-up study
 Type=simple
 WorkingDirectory={out}/source
 ExecStart={sys.executable} -m lunarlander_rl.followup_runner --output {out}
-Environment=OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 MPLBACKEND=Agg PYTHONUNBUFFERED=1
+Environment=OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 MPLBACKEND=Agg PYTHONUNBUFFERED=1{cpu_environment}
 KillMode=mixed
 TimeoutStopSec=180
 Restart=no

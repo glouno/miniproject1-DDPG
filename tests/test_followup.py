@@ -1,8 +1,12 @@
 """Scientific interventions, non-invasive diagnostics and interruption recovery."""
 from dataclasses import replace
 import json
+import os
+from unittest.mock import patch
 from pathlib import Path
 import tempfile
+import subprocess
+import sys
 import unittest
 import numpy as np
 import torch
@@ -11,10 +15,17 @@ from lunarlander_rl.experiment import Config, initialize
 from lunarlander_rl.study_diagnostics import build_probes
 from lunarlander_rl.study_train import train_study
 from lunarlander_rl.mechanism_diagnostics import network_audit, matched_return
-from lunarlander_rl.followup_runner import jobs_for,prepare,verify
+from lunarlander_rl.followup_runner import jobs_for,prepare,verify,worker_environment
+from lunarlander_rl.benchmark_followup import timing_jobs
 
 
 class FollowupChecks(unittest.TestCase):
+    def test_cpu_workers_hide_cuda_without_changing_parent(self):
+        with patch.dict(os.environ,CUDA_VISIBLE_DEVICES='0'):
+            self.assertEqual(worker_environment({'device':'cpu'})['CUDA_VISIBLE_DEVICES'],'')
+            self.assertEqual(worker_environment({'device':'cuda'})['CUDA_VISIBLE_DEVICES'],'0')
+            self.assertEqual(os.environ['CUDA_VISIBLE_DEVICES'],'0')
+
     def cfg(self,**kwargs):
         return Config(max_steps=1100,learning_starts=100,batch_size=32,replay_capacity=1200,
             actor_hidden=(16,16),critic_hidden=(16,16),eval_interval=1100,
@@ -26,6 +37,24 @@ class FollowupChecks(unittest.TestCase):
         self.assertEqual(sum(j['config']['max_steps'] for j in jobs),140_000_000)
         self.assertEqual(len({j['directory'] for j in jobs}),140)
         self.assertEqual(sum(j['stage']=='A' for j in jobs),80)
+
+    def test_scaling_jobs_are_balanced(self):
+        jobs=timing_jobs(40,15000,True)
+        self.assertEqual(len({j['directory'] for j in jobs}),40)
+        self.assertEqual(len({j['cell'] for j in jobs}),8)
+        self.assertTrue(all(sum(j['cell']==cell for j in jobs)==5 for cell in {j['cell'] for j in jobs}))
+        self.assertTrue(all(j['config']['eval_episodes']==20 for j in jobs))
+        self.assertTrue(all(j['config']['max_steps']==15000 for j in jobs))
+
+    def test_benchmark_launch_with_relative_output(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            result=subprocess.run([sys.executable,'-m','lunarlander_rl.benchmark_followup',
+                '--output','timing','--workers','4','--jobs','8','--steps','1001'],cwd=tmp,
+                capture_output=True,text=True,timeout=120)
+            self.assertEqual(result.returncode,0,result.stdout+result.stderr)
+            records=json.loads((Path(tmp)/'timing/benchmark.json').read_text())
+            self.assertEqual(len(records['batches']),1)
+            self.assertIn('minimum_available_gib',records['batches'][0]['resources'])
 
     def test_frozen_inputs_reject_change(self):
         with tempfile.TemporaryDirectory() as tmp:

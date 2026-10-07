@@ -89,6 +89,7 @@ def train_study(cfg, output, bank, horizons=(2500, 5000, 10000), resume=False, s
                 for name in ('rl-mind', 'gymnasium', 'torch', 'numpy', 'Box2D')}
     metadata = dict(config=asdict(cfg), versions=versions, python=platform.python_version(),
         platform=platform.platform(), started_at=datetime.now(timezone.utc).isoformat(),
+        cuda_visible_devices=os.environ.get('CUDA_VISIBLE_DEVICES'),
         source_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         lock_sha256=hashlib.sha256(active_lock.read_bytes()).hexdigest(),
         lock_path=str(active_lock.resolve()),

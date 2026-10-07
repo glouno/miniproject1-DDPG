@@ -65,7 +65,7 @@ def jobs_for(preset):
     return jobs
 
 
-def prepare(out,preset,workers):
+def prepare(out,preset,workers,benchmark_jobs=None):
     out=Path(out).resolve();out.mkdir(parents=True,exist_ok=False)
     base=project_root()
     source=out/'source';source.mkdir();(out/'logs').mkdir()
@@ -74,14 +74,17 @@ def prepare(out,preset,workers):
     shutil.copy2(lock,source/'uv.lock')
     shutil.copy2(lock.with_name('pyproject.toml'),source/'pyproject.toml')
     shutil.copy2(base/'docs/NEXT_STUDY_PROTOCOL.md',source/'NEXT_STUDY_PROTOCOL.md')
-    jobs=jobs_for(preset)
+    if benchmark_jobs is not None and preset!='benchmark':
+        raise ValueError('Custom timing jobs are only allowed in benchmark queues')
+    jobs=jobs_for(preset) if benchmark_jobs is None else benchmark_jobs
     (out/'configs').mkdir()
     for index,job in enumerate(jobs):
         Config(**job['config']).validate()
         job['config_path']=f'configs/job-{index:03d}.json'
         atomic_json(out/job['config_path'],job['config'])
     cfg=Config(**jobs[0]['config'])
-    bank=build_probes(cfg,24 if preset=='full' else 4 if preset=='benchmark' else 2,41000,30 if preset=='full' else 5)
+    full_evaluation=preset=='full' or cfg.eval_episodes==20
+    bank=build_probes(cfg,24 if full_evaluation else 4 if preset=='benchmark' else 2,41000,30 if full_evaluation else 5)
     atomic_json(out/'probes.json',bank)
     files=[*(p for p in source.rglob('*') if p.is_file()),out/'probes.json',*(out/'configs').iterdir()]
     manifest=dict(created_at=timestamp(),preset=preset,workers=workers,interpreter=sys.executable,
@@ -137,6 +140,14 @@ def validate_completed(directory, config):
         checkpoints=len(metrics),transitions=summary['transitions']))
 
 
+def worker_environment(config):
+    env=dict(os.environ,OMP_NUM_THREADS='1',MKL_NUM_THREADS='1',OPENBLAS_NUM_THREADS='1',
+             NUMEXPR_NUM_THREADS='1',PYTHONUNBUFFERED='1',MPLBACKEND='Agg')
+    # Hide CUDA before Torch imports: CPU Adam can otherwise query CUDA streams.
+    if config['device']=='cpu':env['CUDA_VISIBLE_DEVICES']=''
+    return env
+
+
 def run_job(out,job,stop,processes,guard,min_free_gib):
     name=job['directory'];directory=out/name
     if (directory/'summary.json').exists():
@@ -146,8 +157,7 @@ def run_job(out,job,stop,processes,guard,min_free_gib):
     if shutil.disk_usage(out).free<min_free_gib*2**30:
         stop.set();return dict(status='blocked_disk_space')
     command=frozen_command(out/'source','followup_runner')+['--worker','--output',str(out),'--job',name]
-    env=dict(os.environ,OMP_NUM_THREADS='1',MKL_NUM_THREADS='1',OPENBLAS_NUM_THREADS='1',
-             NUMEXPR_NUM_THREADS='1',PYTHONUNBUFFERED='1',MPLBACKEND='Agg')
+    env=worker_environment(job['config'])
     log_path=out/'logs'/f'{name.replace("/","-")}.log'
     with log_path.open('a') as log:
         log.write(f'\nSTART {timestamp()}\n');log.flush()

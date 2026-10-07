@@ -118,10 +118,12 @@ are not required to launch B or included in training throughput measurements.
 
 ## Throughput measurement
 
-`benchmark_followup.py` runs the same 16 timing jobs sequentially at 4/8/12/16
-workers, one Torch/BLAS thread each. It includes instrumentation, evaluation,
-checkpoint writes, process startup and stage analysis. Timing seeds 9000/9001
-never enter the scientific analysis. `benchmark_devices.py` measures fresh CPU
-and CUDA runs separately. A short benchmark is not a reliable duration forecast
-for 1M-step policies: diagnostic episode lengths can change greatly with learning.
-Use actual first full runs to refine completion and storage estimates.
+`lander-benchmark-followup` supports configurable job counts, steps, repeated
+batches and full evaluation. For 20-worker measurement use at least 40 balanced
+jobs; the default 16-job batch cannot occupy 20 workers. All sources/configs are
+frozen before the first batch. CPU and memory-pressure samples accompany the
+results. See [CPU_SCALING.md](CPU_SCALING.md) for the measured settings and choice.
+Timing seeds never enter scientific analysis. `lander-benchmark-devices` measures
+fresh CPU and CUDA runs separately. Short timings are not full-study duration
+forecasts: diagnostic episode lengths change with learning. Use actual full-run
+progress to refine completion and storage estimates.
