@@ -16,8 +16,9 @@ import threading
 import time
 import numpy as np
 
-from experiment import Config
-from study_diagnostics import atomic_json, build_probes
+from .experiment import Config
+from .study_diagnostics import atomic_json, build_probes
+from .paths import project_root, dependency_lock, snapshot_source, frozen_command
 
 
 def sha(path):
@@ -66,15 +67,13 @@ def jobs_for(preset):
 
 def prepare(out,preset,workers):
     out=Path(out).resolve();out.mkdir(parents=True,exist_ok=False)
-    base=Path(__file__).resolve().parent
+    base=project_root()
     source=out/'source';source.mkdir();(out/'logs').mkdir()
-    for p in base.glob('*.py'):
-        shutil.copy2(p,source/p.name)
-    lock=Path(sys.prefix).parent/'uv.lock'
-    if not lock.exists(): lock=base/'environment/uv.lock'
+    snapshot_source(source)
+    lock=dependency_lock()
     shutil.copy2(lock,source/'uv.lock')
     shutil.copy2(lock.with_name('pyproject.toml'),source/'pyproject.toml')
-    shutil.copy2(base/'NEXT_STUDY_PROTOCOL.md',source/'NEXT_STUDY_PROTOCOL.md')
+    shutil.copy2(base/'docs/NEXT_STUDY_PROTOCOL.md',source/'NEXT_STUDY_PROTOCOL.md')
     jobs=jobs_for(preset)
     (out/'configs').mkdir()
     for index,job in enumerate(jobs):
@@ -84,7 +83,7 @@ def prepare(out,preset,workers):
     cfg=Config(**jobs[0]['config'])
     bank=build_probes(cfg,24 if preset=='full' else 4 if preset=='benchmark' else 2,41000,30 if preset=='full' else 5)
     atomic_json(out/'probes.json',bank)
-    files=[*source.iterdir(),out/'probes.json',*(out/'configs').iterdir()]
+    files=[*(p for p in source.rglob('*') if p.is_file()),out/'probes.json',*(out/'configs').iterdir()]
     manifest=dict(created_at=timestamp(),preset=preset,workers=workers,interpreter=sys.executable,
         versions={name:importlib.metadata.version(name) for name in ('rl-mind','torch','gymnasium','numpy','Box2D')},
         git_revision=subprocess.check_output(['git','rev-parse','HEAD'],cwd=base,text=True).strip(),
@@ -103,8 +102,7 @@ def verify(out):
     m=json.loads((out/'manifest.json').read_text())
     for name,digest in m['sha256'].items():
         if sha(out/name)!=digest:raise RuntimeError(f'Frozen file changed: {name}')
-    lock=Path(sys.prefix).parent/'uv.lock'
-    if not lock.exists():lock=Path(__file__).parent/'environment/uv.lock'
+    lock=dependency_lock()
     if sha(lock)!=m['sha256']['source/uv.lock']:raise RuntimeError('Active lock differs from frozen lock')
     for name,version in m['versions'].items():
         if importlib.metadata.version(name)!=version:raise RuntimeError(f'Active package changed: {name}')
@@ -147,8 +145,7 @@ def run_job(out,job,stop,processes,guard,min_free_gib):
     if stop.is_set():return dict(status='pending')
     if shutil.disk_usage(out).free<min_free_gib*2**30:
         stop.set();return dict(status='blocked_disk_space')
-    command=[sys.executable,str(out/'source/followup_runner.py'),'--worker','--output',str(out),
-             '--job',name]
+    command=frozen_command(out/'source','followup_runner')+['--worker','--output',str(out),'--job',name]
     env=dict(os.environ,OMP_NUM_THREADS='1',MKL_NUM_THREADS='1',OPENBLAS_NUM_THREADS='1',
              NUMEXPR_NUM_THREADS='1',PYTHONUNBUFFERED='1',MPLBACKEND='Agg')
     log_path=out/'logs'/f'{name.replace("/","-")}.log'
@@ -156,7 +153,7 @@ def run_job(out,job,stop,processes,guard,min_free_gib):
         log.write(f'\nSTART {timestamp()}\n');log.flush()
         with guard:
             if stop.is_set():return dict(status='pending')
-            process=subprocess.Popen(command,stdout=log,stderr=subprocess.STDOUT,env=env)
+            process=subprocess.Popen(command,stdout=log,stderr=subprocess.STDOUT,env=env,cwd=out/'source')
             processes[name]=process
         code=process.wait()
         with guard:processes.pop(name,None)
@@ -167,7 +164,7 @@ def run_job(out,job,stop,processes,guard,min_free_gib):
 
 
 def worker(out,name):
-    from study_train import train_study
+    from .study_train import train_study
     m=verify(out);job=next(j for j in m['jobs'] if j['directory']==name)
     cfg=Config(**job['config']);directory=out/name
     bank=json.loads((out/'probes.json').read_text())
@@ -211,7 +208,8 @@ def run(out,workers=None,min_free_gib=20):
         if not stage_ok or stop.is_set():
             status['status']='paused' if stop.is_set() else 'requires_attention'
             atomic_json(out/'status.json',status);return 1
-        subprocess.run([sys.executable,str(out/'source/followup_analyse.py'),'--input',str(out),'--stage',stage],check=True)
+        subprocess.run(frozen_command(out/'source','followup_analyse')+['--input',str(out),'--stage',stage],
+            check=True,cwd=out/'source')
     status.update(status='complete',elapsed_seconds=time.monotonic()-start,finished_at=timestamp())
     atomic_json(out/'status.json',status)
     return 0

@@ -4,7 +4,7 @@ from pathlib import Path
 import re
 import subprocess
 import sys
-from followup_runner import verify
+from .followup_runner import verify
 
 
 def main():
@@ -21,8 +21,8 @@ Description=Frozen RL actor/critic LayerNorm follow-up study
 
 [Service]
 Type=simple
-WorkingDirectory={out}
-ExecStart={sys.executable} {out}/source/followup_runner.py --output {out}
+WorkingDirectory={out}/source
+ExecStart={sys.executable} -m lunarlander_rl.followup_runner --output {out}
 Environment=OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 MPLBACKEND=Agg PYTHONUNBUFFERED=1
 KillMode=mixed
 TimeoutStopSec=180

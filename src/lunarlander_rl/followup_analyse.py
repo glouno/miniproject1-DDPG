@@ -4,7 +4,7 @@ import itertools
 import json
 from pathlib import Path
 import numpy as np
-from study_diagnostics import atomic_json
+from .study_diagnostics import atomic_json
 
 
 def paired(values):

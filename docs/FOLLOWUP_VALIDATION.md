@@ -89,3 +89,17 @@ issue in this example is the predicted-value offset. This is one state/seed,
 not a population-level mechanism or evidence that all actions have identical
 true value. Only five candidates have MC values; the full heatmap is prediction.
 Raw candidate rewards, grid values and checkpoint provenance accompany the plot.
+
+## Upstream package migration
+
+The follow-up was integrated with the newer upstream `src/lunarlander_rl` editable
+package, preserving the environment walkthrough notebook and existing tooling.
+New commands run as package modules/CLI entry points. Frozen workers run from
+the copied package directory so the editable checkout cannot override them.
+The root `.venv`/`uv.lock` replace the old `environment/` layout for new runs; old
+frozen outputs and their lockfiles are preserved. Packaging, scientific tests and
+the actual WSL service smoke test were rerun after integration.
+
+Final packaged validation: **16 tests passed on macOS and WSL**. The packaged
+WSL service was stopped and restarted with saved state, then completed all 14
+smoke jobs across both stages. Its temporary service was removed.

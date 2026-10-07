@@ -3,9 +3,9 @@ import argparse
 from dataclasses import replace
 import json
 from pathlib import Path
-from experiment import Config
-from study_diagnostics import atomic_json,build_probes
-from study_train import train_study
+from .experiment import Config
+from .study_diagnostics import atomic_json,build_probes
+from .study_train import train_study
 
 
 def main():

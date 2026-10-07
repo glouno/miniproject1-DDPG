@@ -10,8 +10,8 @@ import numpy as np
 import torch
 from torch import nn
 
-from experiment import load_checkpoint, make_env, discounted_returns
-from study_diagnostics import atomic_json, atomic_npz
+from .experiment import load_checkpoint, make_env, discounted_returns
+from .study_diagnostics import atomic_json, atomic_npz
 
 
 def norm(parameters, gradient=False):

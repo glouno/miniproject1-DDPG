@@ -9,9 +9,8 @@ of A. No human interpretation or outcome-based configuration selection is needed
 Changing B after examining A creates a separate exploratory experiment.
 
 Use `/home/glouno/src/Sorbonne/RL/miniproject` on the native Linux filesystem.
-Its standalone locked environment is `environment/.venv`; `uv sync --locked
---project environment` recreates it. Do not copy the Mac venv. The existing
-manifest works on macOS and Linux; no CUDA dependency split is needed for this
+Its locked editable-package environment is the root `.venv`; `uv sync --locked`
+recreates it. Do not copy the Mac venv. The package manifest works on macOS and Linux; no CUDA dependency split is needed for this
 CPU study. Fresh CUDA benchmarks are separate; exact CUDA continuation is not
 validated, so the scientific queue uses CPU throughout.
 
@@ -20,8 +19,8 @@ validated, so the scientific queue uses CPU throughout.
 Run from the mini-project directory. The output directory must be new:
 
 ```sh
-environment/.venv/bin/python followup_runner.py --prepare --preset full --workers 8 --output outputs/ln-followup-20261007
-environment/.venv/bin/python prepare_wsl_service.py --output outputs/ln-followup-20261007
+uv run --locked lander-followup --prepare --preset full --workers 8 --output outputs/ln-followup-20261007
+uv run --locked lander-prepare-wsl --output outputs/ln-followup-20261007
 ```
 
 The manifest hashes all frozen Python sources, the dependency lock, protocol,
@@ -83,7 +82,7 @@ A backup is only verified after reading its records/checkpoints successfully.
 On WSL:
 
 ```sh
-environment/.venv/bin/tensorboard --logdir outputs/ln-followup-20261007 --host 127.0.0.1 --port 6006
+uv run --locked tensorboard --logdir outputs/ln-followup-20261007 --host 127.0.0.1 --port 6006
 ```
 
 On the Mac, use local 6007 if the old TensorBoard already occupies 6006:
@@ -98,14 +97,16 @@ seed bootstrap intervals, paired contrasts and Holm-adjusted sign-flip p-values.
 For monitoring only, the analysis also supports completed subsets:
 
 ```sh
-environment/.venv/bin/python outputs/ln-followup-20261007/source/followup_analyse.py --input outputs/ln-followup-20261007 --stage A
+cd /home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007/source
+/home/glouno/src/Sorbonne/RL/miniproject/.venv/bin/python -m lunarlander_rl.followup_analyse --input /home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007 --stage A
 ```
 
 Derive prespecified trajectory examples and action maps offline from frozen
 checkpoints (training seeds 20–22 for A, 30–32 for B; four fixed checkpoints):
 
 ```sh
-environment/.venv/bin/python outputs/ln-followup-20261007/source/followup_examples.py --input outputs/ln-followup-20261007 --stage A --maps
+cd /home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007/source
+/home/glouno/src/Sorbonne/RL/miniproject/.venv/bin/python -m lunarlander_rl.followup_examples --input /home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007 --stage A --maps
 ```
 
 The map holds a replayable state fixed and evaluates a 9×9 continuous-action

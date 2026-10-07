@@ -7,11 +7,11 @@ import unittest
 import numpy as np
 import torch
 from torch import nn
-from experiment import Config, initialize
-from study_diagnostics import build_probes
-from study_train import train_study
-from mechanism_diagnostics import network_audit, matched_return
-from followup_runner import jobs_for,prepare,verify
+from lunarlander_rl.experiment import Config, initialize
+from lunarlander_rl.study_diagnostics import build_probes
+from lunarlander_rl.study_train import train_study
+from lunarlander_rl.mechanism_diagnostics import network_audit, matched_return
+from lunarlander_rl.followup_runner import jobs_for,prepare,verify
 
 
 class FollowupChecks(unittest.TestCase):
@@ -31,7 +31,7 @@ class FollowupChecks(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root=Path(tmp)/'queue'
             prepare(root,'smoke',2);verify(root)
-            source=root/'source/experiment.py';original=source.read_bytes()
+            source=root/'source/lunarlander_rl/experiment.py';original=source.read_bytes()
             source.write_bytes(original+b'\n')
             with self.assertRaisesRegex(RuntimeError,'Frozen file changed'):verify(root)
             source.write_bytes(original)

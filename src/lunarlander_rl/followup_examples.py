@@ -3,7 +3,7 @@ import argparse
 import json
 from pathlib import Path
 import numpy as np
-from mechanism_diagnostics import action_maps
+from .mechanism_diagnostics import action_maps
 
 
 def examples(root,stage,maps=False):

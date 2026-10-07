@@ -5,8 +5,9 @@ import subprocess
 import sys
 import time
 from pathlib import Path
-from followup_runner import prepare
-from study_diagnostics import atomic_json
+from .followup_runner import prepare
+from .study_diagnostics import atomic_json
+from .paths import frozen_command
 
 
 def main():
@@ -20,7 +21,7 @@ def main():
         out=a.output/f'workers-{workers}'
         manifest=manifests[workers]
         start=time.monotonic()
-        subprocess.run([sys.executable,str(out/'source/followup_runner.py'),'--output',str(out)],check=True)
+        subprocess.run(frozen_command(out/'source','followup_runner')+['--output',str(out)],check=True,cwd=out/'source')
         wall=time.monotonic()-start
         summaries=[json.loads((out/j['directory']/'summary.json').read_text()) for j in manifest['jobs']]
         size=sum(f.stat().st_size for f in out.rglob('*') if f.is_file())
