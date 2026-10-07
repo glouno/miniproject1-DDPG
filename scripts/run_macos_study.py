@@ -3,7 +3,7 @@
 launchd owns this process; the scientific runner and its source are unchanged.
 """
 import argparse
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timezone
 import hashlib
 import json
 import os
@@ -54,6 +54,7 @@ def main():
     for signum in (signal.SIGTERM, signal.SIGINT):
         signal.signal(signum, lambda number, frame: requested_stop.append(number))
     started = time.monotonic()
+    deadline = time.time()+args.hours*3600
     runner = subprocess.Popen([sys.executable, '-m', 'lunarlander_rl.followup_runner',
         '--output', str(out), '--workers', '8'], cwd=out/'source', env=env)
     guard = None
@@ -62,7 +63,7 @@ def main():
         hours=args.hours, workers=8, output=str(out),
         manifest_sha256=hashlib.sha256((out/'manifest.json').read_bytes()).hexdigest(),
         supervisor_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
-        stop_requested_deadline=(datetime.now(timezone.utc)+timedelta(hours=args.hours)).isoformat(),
+        stop_requested_deadline=datetime.fromtimestamp(deadline, timezone.utc).isoformat(),
         status='running')
     reason = None
     try:
@@ -75,7 +76,7 @@ def main():
         with (out/'machine_timing.jsonl').open('a') as journal:
             while runner.poll() is None:
                 elapsed = time.monotonic() - started
-                if reason is None and (requested_stop or elapsed >= args.hours*3600):
+                if reason is None and (requested_stop or elapsed >= args.hours*3600 or time.time() >= deadline):
                     reason = 'requested_stop' if requested_stop else 'time_budget'
                     record.update(status='checkpointing', stop_reason=reason, stop_requested_at=now())
                     write_state(out/'supervisor.json', record)
