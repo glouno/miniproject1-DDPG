@@ -5,6 +5,7 @@ per worker. Copy the WSL queue's `source/`, `configs/`, `probes.json`,
 `manifest.json` and `manifest.sha256` into a new output directory. Do not copy
 training outputs or regenerate probes using Mac physics. Verify all recorded
 hashes and package versions using the frozen runner before launch.
+The supervisor creates the empty runtime `logs/` directory omitted by that copy.
 
 The scientific revision is `be965b9` on both machines. The Mac manifest is a
 verbatim copy of the WSL manifest, so its `interpreter` field records the origin

@@ -41,6 +41,8 @@ def main():
         parser.error('macOS and a positive time budget are required')
     import psutil
     out = args.output.resolve()
+    # Mirroring immutable inputs omits the original empty runtime directory.
+    (out/'logs').mkdir(exist_ok=True)
     # Import/verify only the scientific code frozen in this queue.
     verification = subprocess.run([sys.executable, '-c',
         'from pathlib import Path; from lunarlander_rl.followup_runner import verify; '
