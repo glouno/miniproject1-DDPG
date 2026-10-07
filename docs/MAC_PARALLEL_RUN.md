@@ -1,17 +1,28 @@
 # Parallel Mac and WSL study
 
 The Mac repeats the WSL queue with eight CPU workers and one Torch/BLAS thread
-per worker. Copy the WSL queue's `source/`, `configs/`, `probes.json`,
-`manifest.json` and `manifest.sha256` into a new output directory. Do not copy
-training outputs or regenerate probes using Mac physics. Verify all recorded
-hashes and package versions using the frozen runner before launch.
-The supervisor creates the empty runtime `logs/` directory omitted by that copy.
+per worker. Prepare a new Mac queue using the same scientific code and preset,
+then verify that every source/config/lock/protocol hash matches WSL. Do not copy
+training outputs. The supervisor also creates an empty runtime `logs/` directory
+if needed.
 
-The scientific revision is `be965b9` on both machines. The Mac manifest is a
-verbatim copy of the WSL manifest, so its `interpreter` field records the origin
-on WSL. The Mac's `supervisor.json` records the actual local interpreter, platform,
-time budget, runner PID, caffeinate PID and supervisor script hash. Per-job
-metadata records the actual runtime platform and package versions too.
+The scientific source matches WSL revision `be965b9` byte for byte. The Mac's
+manifest records its actual preparation commit, including the additional Mac
+supervisor/documentation; those additions do not change the frozen training code.
+Its `supervisor.json` records the local interpreter, platform, time budget, runner
+PID, caffeinate PID and supervisor script hash. Per-job metadata records the
+actual runtime platform and package versions too.
+
+The attempted verbatim WSL-bank copy failed correctly at step zero: native ARM
+Box2D replay produces slightly different observations than x86, even with the
+same seed/action prefix (about 1e-6 in the first failing probe). Preserve that
+failed queue and prepare a fresh platform-native bank. Probe seeds 41000–41023,
+all 30-action prefixes and first diagnostic actions must match WSL exactly;
+the stored expected observations must reflect each platform's actual replay.
+Retain the per-probe differences in `platform_comparison.json`. This is a common
+probe recipe, not bitwise-identical physical states across platforms. Exact replay
+assertions remain enabled within each platform. Never edit an existing frozen
+bank/hash to bypass a failed integrity or physical-state check.
 
 Mac output: `outputs/ln-followup-20261008-mac`. WSL output:
 `outputs/ln-followup-20261007-cpu-scaled`. These are platform repetitions with the
