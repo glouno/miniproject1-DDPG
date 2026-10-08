@@ -1,0 +1,12 @@
+{
+  "frozen_scientific_revision": "6513820281b187017cac02c0bd8f4f825712e809",
+  "wsl_scientific_revision": "be965b95edff62da79877c3a8b150071a1493ce2",
+  "supervisor_revision": "6513820281b187017cac02c0bd8f4f825712e809",
+  "supervisor_sha256": "abf7e0e30991c028e60ad3214945fa3b4a79a4ee506cbf6ef8123b4861e1a93a",
+  "actual_interpreter": "/Users/glouno/Documents/Sorbonne/RL/miniproject/.venv/bin/python",
+  "workers": 8,
+  "hours": 8,
+  "preserved_local_edits": [
+    " M tests/test_followup.py"
+  ]
+}

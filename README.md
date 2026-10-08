@@ -12,6 +12,7 @@ notebooks/           Environment walkthrough and experiment analysis
 configs/             Pilot, benchmark and long-study configurations
 tests/               Scientific correctness, recovery and packaging checks
 docs/                Protocols, measured results and portability notes
+results/             Platform-labelled published tables, figures and provenance
 pyproject.toml       Package, dependencies, editable build and CLI entry points
 uv.lock              Locked dependencies
 .python-version      Python version used by uv
@@ -87,6 +88,13 @@ and `lander-pilot` accept `--device cpu`, `cuda` or `mps`. See
 [HARDWARE_RESULTS.md](docs/HARDWARE_RESULTS.md) for the measured comparisons.
 Every tool also supports `uv run --locked python -m lunarlander_rl.<module>`.
 Use `--help` on a command for its arguments.
+
+## Published study results
+
+- [Mac — Stage A — 8 October 2026](results/mac/stage-a-20261008/README.md):
+  all 80 million-step actor/critic LayerNorm comparison runs, learning/calibration
+  figures, seed-level statistics and timing. Complete raw data and checkpoints are
+  available as labelled GitHub Release assets linked from that folder.
 
 ## Long studies and TensorBoard
 

@@ -1,0 +1,9 @@
+{
+  "status": "passed",
+  "verified_at": "2026-10-08T06:41:10.465062+00:00",
+  "archived_source_files": 18405,
+  "completed_runs": 80,
+  "checkpoint_table_rows": 3920,
+  "archives": 9,
+  "method": "Every archived A/analysis file byte count and SHA-256 matched the original inventory; compressed frames validated; no B run directories archived"
+}

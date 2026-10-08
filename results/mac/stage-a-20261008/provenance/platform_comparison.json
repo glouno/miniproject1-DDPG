@@ -1,0 +1,130 @@
+{
+  "wsl_scientific_revision": "be965b95edff62da79877c3a8b150071a1493ce2",
+  "mac_preparation_revision": "6513820281b187017cac02c0bd8f4f825712e809",
+  "identical_source_config_lock_protocol_hashes": true,
+  "identical_probe_seeds_prefixes_actions": true,
+  "platform_native_probe_observations": true,
+  "probe_differences": [
+    {
+      "seed": 41000,
+      "max_absolute_observation_difference": 1.1473894119262695e-06,
+      "changed_components": 6
+    },
+    {
+      "seed": 41001,
+      "max_absolute_observation_difference": 2.384185791015625e-07,
+      "changed_components": 5
+    },
+    {
+      "seed": 41002,
+      "max_absolute_observation_difference": 2.682209014892578e-07,
+      "changed_components": 5
+    },
+    {
+      "seed": 41003,
+      "max_absolute_observation_difference": 6.891787052154541e-07,
+      "changed_components": 4
+    },
+    {
+      "seed": 41004,
+      "max_absolute_observation_difference": 6.407499313354492e-07,
+      "changed_components": 5
+    },
+    {
+      "seed": 41005,
+      "max_absolute_observation_difference": 1.02166086435318e-06,
+      "changed_components": 5
+    },
+    {
+      "seed": 41006,
+      "max_absolute_observation_difference": 2.980232238769531e-07,
+      "changed_components": 4
+    },
+    {
+      "seed": 41007,
+      "max_absolute_observation_difference": 8.940696716308594e-07,
+      "changed_components": 5
+    },
+    {
+      "seed": 41008,
+      "max_absolute_observation_difference": 3.129243850708008e-07,
+      "changed_components": 4
+    },
+    {
+      "seed": 41009,
+      "max_absolute_observation_difference": 8.344650268554688e-07,
+      "changed_components": 6
+    },
+    {
+      "seed": 41010,
+      "max_absolute_observation_difference": 4.3213367462158203e-07,
+      "changed_components": 6
+    },
+    {
+      "seed": 41011,
+      "max_absolute_observation_difference": 6.556510925292969e-07,
+      "changed_components": 5
+    },
+    {
+      "seed": 41012,
+      "max_absolute_observation_difference": 4.172325134277344e-07,
+      "changed_components": 4
+    },
+    {
+      "seed": 41013,
+      "max_absolute_observation_difference": 2.980232238769531e-07,
+      "changed_components": 3
+    },
+    {
+      "seed": 41014,
+      "max_absolute_observation_difference": 2.771615982055664e-06,
+      "changed_components": 6
+    },
+    {
+      "seed": 41015,
+      "max_absolute_observation_difference": 7.525086402893066e-07,
+      "changed_components": 5
+    },
+    {
+      "seed": 41016,
+      "max_absolute_observation_difference": 1.1026859283447266e-06,
+      "changed_components": 5
+    },
+    {
+      "seed": 41017,
+      "max_absolute_observation_difference": 2.5331974029541016e-07,
+      "changed_components": 3
+    },
+    {
+      "seed": 41018,
+      "max_absolute_observation_difference": 1.043081283569336e-06,
+      "changed_components": 6
+    },
+    {
+      "seed": 41019,
+      "max_absolute_observation_difference": 5.21540641784668e-07,
+      "changed_components": 5
+    },
+    {
+      "seed": 41020,
+      "max_absolute_observation_difference": 4.76837158203125e-07,
+      "changed_components": 6
+    },
+    {
+      "seed": 41021,
+      "max_absolute_observation_difference": 2.8312206268310547e-07,
+      "changed_components": 5
+    },
+    {
+      "seed": 41022,
+      "max_absolute_observation_difference": 4.76837158203125e-07,
+      "changed_components": 5
+    },
+    {
+      "seed": 41023,
+      "max_absolute_observation_difference": 1.1920928955078125e-07,
+      "changed_components": 6
+    }
+  ],
+  "maximum_observation_difference": 2.771615982055664e-06
+}

@@ -1,0 +1,51 @@
+{
+  "verified_at": "2026-10-07T22:11:29.765855+00:00",
+  "status": "running",
+  "workers": 8,
+  "job_checks": [
+    {
+      "job": "ddpg-a0-c0-seed20",
+      "step": 22000,
+      "checkpoint_bytes": 2169617
+    },
+    {
+      "job": "ddpg-a0-c1-seed20",
+      "step": 14000,
+      "checkpoint_bytes": 1446613
+    },
+    {
+      "job": "ddpg-a1-c0-seed20",
+      "step": 24000,
+      "checkpoint_bytes": 2206165
+    },
+    {
+      "job": "ddpg-a1-c1-seed20",
+      "step": 11000,
+      "checkpoint_bytes": 1459171
+    },
+    {
+      "job": "td3-a0-c0-seed20",
+      "step": 24000,
+      "checkpoint_bytes": 2507895
+    },
+    {
+      "job": "td3-a0-c1-seed20",
+      "step": 26000,
+      "checkpoint_bytes": 2865895
+    },
+    {
+      "job": "td3-a1-c0-seed20",
+      "step": 19000,
+      "checkpoint_bytes": 2092239
+    },
+    {
+      "job": "td3-a1-c1-seed20",
+      "step": 18000,
+      "checkpoint_bytes": 2148607
+    }
+  ],
+  "processes": "  PID  PPID ELAPSED COMMAND\n67577     1   01:09 /Users/glouno/Documents/Sorbonne/RL/miniproject/.venv/bin/python /Users/glouno/Documents/Sorbonne/RL/miniproject/outputs/ln-followup-20261008-mac/mac_supervisor.py --output /Users/glouno/Documents/Sorbonne/RL/miniproject/outputs/ln-followup-20261008-mac --hours 8\n67599 67577   01:08 /Users/glouno/Documents/Sorbonne/RL/miniproject/.venv/bin/python -m lunarlander_rl.followup_runner --output /Users/glouno/Documents/Sorbonne/RL/miniproject/outputs/ln-followup-20261008-mac --workers 8\n67602 67577   01:08 /usr/bin/caffeinate -i -s -w 67599\n",
+  "deadline": "2026-10-08T06:10:21.510337+00:00",
+  "mac_preparation_revision": "6513820281b187017cac02c0bd8f4f825712e809",
+  "wsl_scientific_revision": "be965b95edff62da79877c3a8b150071a1493ce2"
+}
