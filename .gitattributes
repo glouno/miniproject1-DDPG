@@ -1,0 +1,2 @@
+# Exported CSV uses RFC-style CRLF locally; store portable LF in Git.
+results/**/*.csv text eol=lf
