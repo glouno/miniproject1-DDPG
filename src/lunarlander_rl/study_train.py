@@ -262,7 +262,8 @@ def train_study(cfg, output, bank, horizons=(2500, 5000, 10000), resume=False, s
                         next_action = torch.clamp(next_action + noise, min=actor.low, max=actor.high)
                     values = torch.stack([q(batch.next_obs, next_action) for q in target_critics])
                     next_q = values.min(dim=0).values
-                    target = bellman_target(batch.reward, batch.terminated, next_q, cfg.gamma)
+                    training_reward = batch.reward * cfg.reward_scale
+                    target = bellman_target(training_reward, batch.terminated, next_q, cfg.gamma)
                 critic_loss = sum(nn.functional.mse_loss(q(batch.obs, batch.action.value), target)
                                   for q in critics)
                 if not torch.isfinite(critic_loss):
@@ -275,7 +276,7 @@ def train_study(cfg, output, bank, horizons=(2500, 5000, 10000), resume=False, s
                         prediction=critics[0](batch.obs,batch.action.value)
                         optimization.update(critic_loss_sum=float(critic_loss.detach()), critic_gradient_norm=norm(critics.parameters(),True),
                             td_residual=distribution(prediction-target),q=distribution(prediction),target=distribution(target),
-                            immediate_reward=distribution(batch.reward), bootstrap=distribution(target-batch.reward),
+                            immediate_reward=distribution(training_reward), bootstrap=distribution(target-training_reward),
                             terminal_fraction=float(batch.terminated.float().mean()),
                             replay_actor_action_distance=float((actor(batch.obs)-batch.action.value).square().mean().sqrt()),
                             critic_losses=[float(nn.functional.mse_loss(q(batch.obs,batch.action.value),target)) for q in critics])
@@ -284,7 +285,7 @@ def train_study(cfg, output, bank, horizons=(2500, 5000, 10000), resume=False, s
                     optimization.update(critic_parameter_norm=norm(critics.parameters()),
                         critic_update_norm=norm([p.detach()-old for p,old in zip(critics.parameters(),critic_before)]))
                 updates += 1
-                delay = cfg.policy_delay if cfg.algorithm == 'td3' else 1
+                delay = cfg.policy_delay if cfg.algorithm == 'td3' else cfg.ddpg_actor_delay
                 if updates % delay == 0:
                     critics[0].requires_grad_(False)
                     actor_loss = -critics[0](batch.obs, actor(batch.obs)).mean()
@@ -301,6 +302,7 @@ def train_study(cfg, output, bank, horizons=(2500, 5000, 10000), resume=False, s
                             actor_update_norm=norm([p.detach()-old for p,old in zip(actor.parameters(),actor_before)]))
                     critics[0].requires_grad_(True)
                     actor_updates += 1
+                if cfg.algorithm == 'ddpg' or updates % delay == 0:
                     soft_update(actor, target_actor, cfg.tau)
                     soft_update(critics, target_critics, cfg.tau)
             if audit_update:
@@ -326,7 +328,7 @@ def train_study(cfg, output, bank, horizons=(2500, 5000, 10000), resume=False, s
     env.close()
     expected_rounds = max(0, cfg.max_steps - cfg.learning_starts + 1) * cfg.gradient_steps_per_transition
     assert updates == expected_rounds
-    assert actor_updates == updates // (cfg.policy_delay if cfg.algorithm == 'td3' else 1)
+    assert actor_updates == updates // (cfg.policy_delay if cfg.algorithm == 'td3' else cfg.ddpg_actor_delay)
     synchronize(device)
     elapsed = elapsed_base + time.monotonic() - started
     summary = dict(device=cfg.device, checkpoint_seconds=round(checkpoint_seconds, 3),

@@ -102,7 +102,8 @@ def evaluate_study(cfg, actor, critics, step, out, bank, horizons=(2500, 5000, 1
                 if cfg.instrumentation and len(rewards)<cfg.train_horizon:
                     trajectory_obs.append(obs.copy());trajectory_actions.append(action[0].numpy().copy())
                 if (not probe and len(rewards) < cfg.train_horizon) or (probe and not rewards):
-                    predictions.append([q(tensor, action).item() for q in critics])
+                    # Match raw discounted MC: trained Q is in scaled reward units.
+                    predictions.append([q(tensor, action).item() / cfg.reward_scale for q in critics])
                     observations.append(obs.copy()); actions.append(action[0].numpy().copy())
                 obs, reward, term, trunc, _ = env.step(action[0].numpy())
                 rewards.append(float(reward))

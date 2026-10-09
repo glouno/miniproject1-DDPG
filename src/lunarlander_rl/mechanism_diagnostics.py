@@ -133,14 +133,14 @@ def action_maps(checkpoint, probes, destination, grid_size=9, count=6):
     for index,probe in enumerate(probes[:count]):
         obs=torch.tensor(probe['obs'],dtype=torch.float32).repeat(len(actions),1)
         with torch.inference_mode():
-            qs=np.column_stack([q(obs,torch.from_numpy(actions)).numpy() for q in critics])
+            qs=np.column_stack([q(obs,torch.from_numpy(actions)).numpy() for q in critics]) / cfg.reward_scale
             chosen=actor(obs[:1])[0].numpy()
         candidates=[('actor',chosen),('zero',np.zeros(2)),('diagonal+',np.array([.5,.5])),
                     ('diagonal-',np.array([-.5,-.5])),('Q1 grid max',actions[qs[:,0].argmax()])]
         tests=[]
         for name,action in candidates:
             with torch.inference_mode():
-                prediction=float(critics[0](obs[:1],torch.tensor(action,dtype=torch.float32).unsqueeze(0)))
+                prediction=float(critics[0](obs[:1],torch.tensor(action,dtype=torch.float32).unsqueeze(0))) / cfg.reward_scale
             result,rewards=matched_return(cfg,actor,probe,action)
             tests.append(dict(name=name,action=action.tolist(),q=prediction,**result))
             atomic_npz(destination/f'probe{index}-candidate{len(tests)-1}.npz',rewards=rewards)

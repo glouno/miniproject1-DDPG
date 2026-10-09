@@ -56,7 +56,9 @@ class Config:
     learning_starts: int = 5_000
     gradient_steps_per_transition: int = 1
     exploration_noise: float = 0.1
-    policy_delay: int = 2  # TD3 only; DDPG always updates its actor every round.
+    policy_delay: int = 2  # TD3 actor/target cadence.
+    ddpg_actor_delay: int = 1  # Study trainer: targets still update every critic round.
+    reward_scale: float = 1.0  # Study trainer: raw replay; scale immediate Bellman rewards only.
     target_noise: float = 0.2  # TD3 only.
     target_noise_clip: float = 0.5  # TD3 only.
     eval_interval: int = 10_000
@@ -79,6 +81,8 @@ class Config:
         assert self.diagnostic_horizon >= self.train_horizon
         assert self.eval_episodes > 0 and self.diagnostic_stride > 0
         assert self.policy_delay > 0 and self.gradient_steps_per_transition > 0
+        assert isinstance(self.ddpg_actor_delay, int) and self.ddpg_actor_delay > 0
+        assert np.isfinite(self.reward_scale) and self.reward_scale > 0
 
 
 def mlp(input_size, hidden, output_size, layer_norm=False):
