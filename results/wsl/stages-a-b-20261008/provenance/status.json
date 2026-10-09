@@ -1,0 +1,712 @@
+{
+  "status": "complete",
+  "started_at": "2026-10-07T21:57:58.372334+00:00",
+  "runner_pid": 2353992,
+  "workers": 8,
+  "jobs": {
+    "A/td3-a0-c0-seed20": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a0-c0-seed20.log"
+    },
+    "A/td3-a1-c0-seed20": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a1-c0-seed20.log"
+    },
+    "A/ddpg-a0-c0-seed20": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a0-c0-seed20.log"
+    },
+    "A/td3-a0-c1-seed20": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a0-c1-seed20.log"
+    },
+    "A/ddpg-a0-c1-seed20": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a0-c1-seed20.log"
+    },
+    "A/ddpg-a1-c0-seed20": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a1-c0-seed20.log"
+    },
+    "A/ddpg-a1-c1-seed20": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a1-c1-seed20.log"
+    },
+    "A/td3-a1-c1-seed20": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a1-c1-seed20.log"
+    },
+    "A/ddpg-a0-c0-seed21": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a0-c0-seed21.log"
+    },
+    "A/td3-a0-c0-seed21": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a0-c0-seed21.log"
+    },
+    "A/ddpg-a0-c1-seed21": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a0-c1-seed21.log"
+    },
+    "A/ddpg-a1-c0-seed21": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a1-c0-seed21.log"
+    },
+    "A/td3-a1-c0-seed21": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a1-c0-seed21.log"
+    },
+    "A/ddpg-a1-c1-seed21": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a1-c1-seed21.log"
+    },
+    "A/td3-a0-c1-seed21": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a0-c1-seed21.log"
+    },
+    "A/td3-a1-c1-seed21": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a1-c1-seed21.log"
+    },
+    "A/ddpg-a0-c0-seed22": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a0-c0-seed22.log"
+    },
+    "A/td3-a0-c0-seed22": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a0-c0-seed22.log"
+    },
+    "A/ddpg-a0-c1-seed22": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a0-c1-seed22.log"
+    },
+    "A/ddpg-a1-c0-seed22": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a1-c0-seed22.log"
+    },
+    "A/td3-a0-c1-seed22": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a0-c1-seed22.log"
+    },
+    "A/ddpg-a1-c1-seed22": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a1-c1-seed22.log"
+    },
+    "A/td3-a1-c0-seed22": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a1-c0-seed22.log"
+    },
+    "A/td3-a1-c1-seed22": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a1-c1-seed22.log"
+    },
+    "A/ddpg-a0-c0-seed23": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a0-c0-seed23.log"
+    },
+    "A/ddpg-a0-c1-seed23": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a0-c1-seed23.log"
+    },
+    "A/td3-a0-c0-seed23": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a0-c0-seed23.log"
+    },
+    "A/ddpg-a1-c1-seed23": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a1-c1-seed23.log"
+    },
+    "A/ddpg-a1-c0-seed23": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a1-c0-seed23.log"
+    },
+    "A/td3-a0-c1-seed23": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a0-c1-seed23.log"
+    },
+    "A/td3-a1-c0-seed23": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a1-c0-seed23.log"
+    },
+    "A/td3-a1-c1-seed23": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a1-c1-seed23.log"
+    },
+    "A/ddpg-a0-c0-seed24": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a0-c0-seed24.log"
+    },
+    "A/ddpg-a0-c1-seed24": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a0-c1-seed24.log"
+    },
+    "A/td3-a0-c0-seed24": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a0-c0-seed24.log"
+    },
+    "A/ddpg-a1-c1-seed24": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a1-c1-seed24.log"
+    },
+    "A/ddpg-a1-c0-seed24": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a1-c0-seed24.log"
+    },
+    "A/td3-a1-c0-seed24": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a1-c0-seed24.log"
+    },
+    "A/td3-a0-c1-seed24": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a0-c1-seed24.log"
+    },
+    "A/td3-a1-c1-seed24": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a1-c1-seed24.log"
+    },
+    "A/ddpg-a0-c0-seed25": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a0-c0-seed25.log"
+    },
+    "A/ddpg-a0-c1-seed25": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a0-c1-seed25.log"
+    },
+    "A/ddpg-a1-c0-seed25": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a1-c0-seed25.log"
+    },
+    "A/td3-a0-c0-seed25": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a0-c0-seed25.log"
+    },
+    "A/ddpg-a1-c1-seed25": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a1-c1-seed25.log"
+    },
+    "A/td3-a1-c0-seed25": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a1-c0-seed25.log"
+    },
+    "A/td3-a0-c1-seed25": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a0-c1-seed25.log"
+    },
+    "A/td3-a1-c1-seed25": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a1-c1-seed25.log"
+    },
+    "A/ddpg-a0-c0-seed26": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a0-c0-seed26.log"
+    },
+    "A/ddpg-a1-c0-seed26": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a1-c0-seed26.log"
+    },
+    "A/ddpg-a0-c1-seed26": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a0-c1-seed26.log"
+    },
+    "A/td3-a0-c0-seed26": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a0-c0-seed26.log"
+    },
+    "A/ddpg-a1-c1-seed26": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a1-c1-seed26.log"
+    },
+    "A/td3-a0-c1-seed26": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a0-c1-seed26.log"
+    },
+    "A/td3-a1-c0-seed26": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a1-c0-seed26.log"
+    },
+    "A/td3-a1-c1-seed26": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a1-c1-seed26.log"
+    },
+    "A/ddpg-a0-c0-seed27": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a0-c0-seed27.log"
+    },
+    "A/ddpg-a0-c1-seed27": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a0-c1-seed27.log"
+    },
+    "A/ddpg-a1-c0-seed27": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a1-c0-seed27.log"
+    },
+    "A/td3-a0-c0-seed27": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a0-c0-seed27.log"
+    },
+    "A/ddpg-a1-c1-seed27": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a1-c1-seed27.log"
+    },
+    "A/td3-a1-c0-seed27": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a1-c0-seed27.log"
+    },
+    "A/td3-a0-c1-seed27": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a0-c1-seed27.log"
+    },
+    "A/td3-a1-c1-seed27": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a1-c1-seed27.log"
+    },
+    "A/ddpg-a0-c0-seed28": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a0-c0-seed28.log"
+    },
+    "A/ddpg-a1-c0-seed28": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a1-c0-seed28.log"
+    },
+    "A/ddpg-a1-c1-seed28": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a1-c1-seed28.log"
+    },
+    "A/td3-a0-c0-seed28": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a0-c0-seed28.log"
+    },
+    "A/ddpg-a0-c1-seed28": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a0-c1-seed28.log"
+    },
+    "A/td3-a0-c1-seed28": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a0-c1-seed28.log"
+    },
+    "A/td3-a1-c0-seed28": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a1-c0-seed28.log"
+    },
+    "A/td3-a1-c1-seed28": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a1-c1-seed28.log"
+    },
+    "A/ddpg-a0-c0-seed29": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a0-c0-seed29.log"
+    },
+    "A/td3-a0-c0-seed29": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a0-c0-seed29.log"
+    },
+    "A/ddpg-a0-c1-seed29": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a0-c1-seed29.log"
+    },
+    "A/ddpg-a1-c0-seed29": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a1-c0-seed29.log"
+    },
+    "A/ddpg-a1-c1-seed29": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-ddpg-a1-c1-seed29.log"
+    },
+    "A/td3-a0-c1-seed29": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a0-c1-seed29.log"
+    },
+    "A/td3-a1-c0-seed29": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a1-c0-seed29.log"
+    },
+    "A/td3-a1-c1-seed29": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/A-td3-a1-c1-seed29.log"
+    },
+    "B/ddpg-a0-c0-clr0.0003-alr0.0003-seed30": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c0-clr0.0003-alr0.0003-seed30.log"
+    },
+    "B/ddpg-a0-c1-clr0.0001-alr0.0003-seed30": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0001-alr0.0003-seed30.log"
+    },
+    "B/ddpg-a0-c1-clr0.0003-alr0.0003-seed30": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0003-alr0.0003-seed30.log"
+    },
+    "B/ddpg-a0-c1-clr0.0003-alr0.0001-seed30": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0003-alr0.0001-seed30.log"
+    },
+    "B/ddpg-a0-c1-clr0.0003-alr0.0003-seed31": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0003-alr0.0003-seed31.log"
+    },
+    "B/ddpg-a0-c1-clr0.0003-alr0.0001-seed31": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0003-alr0.0001-seed31.log"
+    },
+    "B/ddpg-a0-c1-clr0.0001-alr0.0001-seed30": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0001-alr0.0001-seed30.log"
+    },
+    "B/ddpg-a0-c0-clr0.0001-alr0.0001-seed30": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c0-clr0.0001-alr0.0001-seed30.log"
+    },
+    "B/ddpg-a0-c1-clr0.0001-alr0.0003-seed31": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0001-alr0.0003-seed31.log"
+    },
+    "B/ddpg-a0-c0-clr0.0003-alr0.0003-seed31": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c0-clr0.0003-alr0.0003-seed31.log"
+    },
+    "B/ddpg-a0-c0-clr0.0001-alr0.0001-seed31": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c0-clr0.0001-alr0.0001-seed31.log"
+    },
+    "B/ddpg-a0-c1-clr0.0003-alr0.0003-seed32": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0003-alr0.0003-seed32.log"
+    },
+    "B/ddpg-a0-c1-clr0.0001-alr0.0001-seed31": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0001-alr0.0001-seed31.log"
+    },
+    "B/ddpg-a0-c1-clr0.0001-alr0.0001-seed32": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0001-alr0.0001-seed32.log"
+    },
+    "B/ddpg-a0-c1-clr0.0001-alr0.0003-seed32": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0001-alr0.0003-seed32.log"
+    },
+    "B/ddpg-a0-c1-clr0.0003-alr0.0001-seed32": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0003-alr0.0001-seed32.log"
+    },
+    "B/ddpg-a0-c0-clr0.0003-alr0.0003-seed32": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c0-clr0.0003-alr0.0003-seed32.log"
+    },
+    "B/ddpg-a0-c1-clr0.0003-alr0.0003-seed33": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0003-alr0.0003-seed33.log"
+    },
+    "B/ddpg-a0-c0-clr0.0003-alr0.0003-seed33": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c0-clr0.0003-alr0.0003-seed33.log"
+    },
+    "B/ddpg-a0-c0-clr0.0001-alr0.0001-seed32": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c0-clr0.0001-alr0.0001-seed32.log"
+    },
+    "B/ddpg-a0-c1-clr0.0001-alr0.0001-seed33": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0001-alr0.0001-seed33.log"
+    },
+    "B/ddpg-a0-c0-clr0.0001-alr0.0001-seed33": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c0-clr0.0001-alr0.0001-seed33.log"
+    },
+    "B/ddpg-a0-c1-clr0.0001-alr0.0003-seed33": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0001-alr0.0003-seed33.log"
+    },
+    "B/ddpg-a0-c1-clr0.0003-alr0.0001-seed33": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0003-alr0.0001-seed33.log"
+    },
+    "B/ddpg-a0-c0-clr0.0001-alr0.0001-seed34": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c0-clr0.0001-alr0.0001-seed34.log"
+    },
+    "B/ddpg-a0-c0-clr0.0003-alr0.0003-seed34": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c0-clr0.0003-alr0.0003-seed34.log"
+    },
+    "B/ddpg-a0-c1-clr0.0003-alr0.0001-seed34": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0003-alr0.0001-seed34.log"
+    },
+    "B/ddpg-a0-c1-clr0.0001-alr0.0003-seed34": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0001-alr0.0003-seed34.log"
+    },
+    "B/ddpg-a0-c1-clr0.0001-alr0.0001-seed34": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0001-alr0.0001-seed34.log"
+    },
+    "B/ddpg-a0-c1-clr0.0003-alr0.0003-seed34": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0003-alr0.0003-seed34.log"
+    },
+    "B/ddpg-a0-c1-clr0.0003-alr0.0001-seed35": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0003-alr0.0001-seed35.log"
+    },
+    "B/ddpg-a0-c1-clr0.0003-alr0.0003-seed35": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0003-alr0.0003-seed35.log"
+    },
+    "B/ddpg-a0-c0-clr0.0003-alr0.0003-seed35": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c0-clr0.0003-alr0.0003-seed35.log"
+    },
+    "B/ddpg-a0-c1-clr0.0001-alr0.0003-seed35": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0001-alr0.0003-seed35.log"
+    },
+    "B/ddpg-a0-c0-clr0.0001-alr0.0001-seed35": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c0-clr0.0001-alr0.0001-seed35.log"
+    },
+    "B/ddpg-a0-c1-clr0.0003-alr0.0001-seed36": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0003-alr0.0001-seed36.log"
+    },
+    "B/ddpg-a0-c1-clr0.0001-alr0.0001-seed35": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0001-alr0.0001-seed35.log"
+    },
+    "B/ddpg-a0-c1-clr0.0001-alr0.0001-seed36": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0001-alr0.0001-seed36.log"
+    },
+    "B/ddpg-a0-c1-clr0.0003-alr0.0003-seed36": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0003-alr0.0003-seed36.log"
+    },
+    "B/ddpg-a0-c1-clr0.0001-alr0.0003-seed36": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0001-alr0.0003-seed36.log"
+    },
+    "B/ddpg-a0-c0-clr0.0003-alr0.0003-seed36": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c0-clr0.0003-alr0.0003-seed36.log"
+    },
+    "B/ddpg-a0-c0-clr0.0001-alr0.0001-seed36": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c0-clr0.0001-alr0.0001-seed36.log"
+    },
+    "B/ddpg-a0-c1-clr0.0003-alr0.0001-seed37": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0003-alr0.0001-seed37.log"
+    },
+    "B/ddpg-a0-c1-clr0.0003-alr0.0003-seed37": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0003-alr0.0003-seed37.log"
+    },
+    "B/ddpg-a0-c0-clr0.0003-alr0.0003-seed37": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c0-clr0.0003-alr0.0003-seed37.log"
+    },
+    "B/ddpg-a0-c1-clr0.0001-alr0.0003-seed37": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0001-alr0.0003-seed37.log"
+    },
+    "B/ddpg-a0-c1-clr0.0001-alr0.0001-seed37": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0001-alr0.0001-seed37.log"
+    },
+    "B/ddpg-a0-c0-clr0.0001-alr0.0001-seed37": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c0-clr0.0001-alr0.0001-seed37.log"
+    },
+    "B/ddpg-a0-c1-clr0.0003-alr0.0003-seed38": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0003-alr0.0003-seed38.log"
+    },
+    "B/ddpg-a0-c1-clr0.0003-alr0.0001-seed38": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0003-alr0.0001-seed38.log"
+    },
+    "B/ddpg-a0-c1-clr0.0001-alr0.0003-seed38": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0001-alr0.0003-seed38.log"
+    },
+    "B/ddpg-a0-c0-clr0.0001-alr0.0001-seed38": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c0-clr0.0001-alr0.0001-seed38.log"
+    },
+    "B/ddpg-a0-c1-clr0.0001-alr0.0001-seed38": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0001-alr0.0001-seed38.log"
+    },
+    "B/ddpg-a0-c0-clr0.0003-alr0.0003-seed38": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c0-clr0.0003-alr0.0003-seed38.log"
+    },
+    "B/ddpg-a0-c1-clr0.0003-alr0.0003-seed39": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0003-alr0.0003-seed39.log"
+    },
+    "B/ddpg-a0-c1-clr0.0003-alr0.0001-seed39": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0003-alr0.0001-seed39.log"
+    },
+    "B/ddpg-a0-c1-clr0.0001-alr0.0001-seed39": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0001-alr0.0001-seed39.log"
+    },
+    "B/ddpg-a0-c1-clr0.0001-alr0.0003-seed39": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c1-clr0.0001-alr0.0003-seed39.log"
+    },
+    "B/ddpg-a0-c0-clr0.0001-alr0.0001-seed39": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c0-clr0.0001-alr0.0001-seed39.log"
+    },
+    "B/ddpg-a0-c0-clr0.0003-alr0.0003-seed39": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/ln-followup-20261007-cpu-scaled/logs/B-ddpg-a0-c0-clr0.0003-alr0.0003-seed39.log"
+    }
+  },
+  "stage": "B",
+  "updated_at": "2026-10-08T20:20:41.073265+00:00",
+  "elapsed_seconds": 80560.71028509401,
+  "finished_at": "2026-10-08T20:20:44.663181+00:00"
+}

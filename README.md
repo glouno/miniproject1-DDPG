@@ -96,6 +96,11 @@ Use `--help` on a command for its arguments.
   figures, seed-level statistics and timing. Complete raw data and checkpoints are
   available as labelled GitHub Release assets linked from that folder.
 
+- [WSL (Paris) — Stages A+B — 8 October 2026](results/wsl/stages-a-b-20261008/README.md):
+  all 140 million-step runs completed and validated, with platform-labelled
+  learning/calibration figures, seed-level tables and complete raw-data release assets.
+  WSL and Mac datasets remain separate.
+
 ## Long studies and TensorBoard
 
 [STUDY_PROTOCOL.md](docs/STUDY_PROTOCOL.md) defines the frozen 40-run comparison,

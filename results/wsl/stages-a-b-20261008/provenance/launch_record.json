@@ -1,0 +1,52 @@
+{
+  "verified_at": "2026-10-07T21:59:02.268833+00:00",
+  "git_revision": "be965b95edff62da79877c3a8b150071a1493ce2",
+  "parent_git_revision": "d1e48ef190ff3ac13285dfff4e0efdd1af62082c",
+  "workers": 8,
+  "total_jobs": 140,
+  "total_transitions": 140000000,
+  "service": "rl-ln-followup-20261007.service",
+  "running_jobs": [
+    {
+      "job": "ddpg-a0-c0-seed20",
+      "step": 16000,
+      "latest_resume_bytes": 1801425
+    },
+    {
+      "job": "ddpg-a0-c1-seed20",
+      "step": 14000,
+      "latest_resume_bytes": 1418837
+    },
+    {
+      "job": "ddpg-a1-c0-seed20",
+      "step": 16000,
+      "latest_resume_bytes": 1815317
+    },
+    {
+      "job": "ddpg-a1-c1-seed20",
+      "step": 9000,
+      "latest_resume_bytes": 1032803
+    },
+    {
+      "job": "td3-a0-c0-seed20",
+      "step": 19000,
+      "latest_resume_bytes": 2074231
+    },
+    {
+      "job": "td3-a0-c1-seed20",
+      "step": 18000,
+      "latest_resume_bytes": 2109991
+    },
+    {
+      "job": "td3-a1-c0-seed20",
+      "step": 19000,
+      "latest_resume_bytes": 2115599
+    },
+    {
+      "job": "td3-a1-c1-seed20",
+      "step": 16000,
+      "latest_resume_bytes": 2136063
+    }
+  ],
+  "service_state": "MainPID=2353992\nActiveState=active\nUnitFileState=enabled\n"
+}

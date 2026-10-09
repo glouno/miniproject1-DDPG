@@ -1,0 +1,12 @@
+{
+  "status": "passed",
+  "platform": "wsl",
+  "completed_runs": 140,
+  "stage_a_runs": 80,
+  "stage_b_runs": 60,
+  "checkpoint_table_rows": 6860,
+  "verified_at": "2026-10-09T00:05:13.737759+00:00",
+  "archived_source_files": 32531,
+  "archives": 15,
+  "method": "Frozen hashes checked; all completion validations valid; regenerated statistics exactly match originals; every archived file size and SHA-256 matches the full inventory."
+}

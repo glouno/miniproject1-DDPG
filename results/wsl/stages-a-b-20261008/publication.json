@@ -1,0 +1,93 @@
+{
+  "platform": "wsl",
+  "stages": [
+    "A",
+    "B"
+  ],
+  "label": "wsl-stages-a-b-20261008",
+  "release_url": "https://github.com/glouno/miniproject1-DDPG/releases/tag/results-wsl-stages-a-b-20261008",
+  "exported_at": "2026-10-09T00:05:13.735714+00:00",
+  "completed_runs": 140,
+  "training_steps": 140000000,
+  "scientific_preparation_revision": "be965b95edff62da79877c3a8b150071a1493ce2",
+  "raw_bytes": 13991334996,
+  "compressed_archive_bytes": 12407163182,
+  "archives": [
+    {
+      "name": "wsl-stages-a-b-20261008-a-ddpg-a0-c0.tar.gz",
+      "bytes": 998041762,
+      "sha256": "dce5e00d5de10d960865a3a5b9d3cca6886b384cd9e51a141bb9961df7b28f84"
+    },
+    {
+      "name": "wsl-stages-a-b-20261008-a-ddpg-a0-c1.tar.gz",
+      "bytes": 934831183,
+      "sha256": "39b628a6015467f3d8f494544277a4b2db0385eadb37c74bb36b05db2f73bdd8"
+    },
+    {
+      "name": "wsl-stages-a-b-20261008-a-ddpg-a1-c0.tar.gz",
+      "bytes": 981742947,
+      "sha256": "84a090812d496faf8f3a2f70ab57eb0ff39a6cda0b622ceabe3ed3d30eaaa3a1"
+    },
+    {
+      "name": "wsl-stages-a-b-20261008-a-ddpg-a1-c1.tar.gz",
+      "bytes": 829858983,
+      "sha256": "dee2f8f6fe546970ffaecb5c8690635a0e2b76feca5291cfa386263f29044f5b"
+    },
+    {
+      "name": "wsl-stages-a-b-20261008-a-td3-a0-c0.tar.gz",
+      "bytes": 839418279,
+      "sha256": "93cabc10357b90181f9295017a757ff55649e8f39a60cb51aa6dcd1bc6ee8ed1"
+    },
+    {
+      "name": "wsl-stages-a-b-20261008-a-td3-a0-c1.tar.gz",
+      "bytes": 769233538,
+      "sha256": "e37bbfdb71f81d1c9e07fa5b4cb67a6480c341848fa171be5726601ad084ea46"
+    },
+    {
+      "name": "wsl-stages-a-b-20261008-a-td3-a1-c0.tar.gz",
+      "bytes": 836884844,
+      "sha256": "4f05768d3e947d7b5a4ab0d28d0ff8a6bd05972454bcebdf495cf3a061c00452"
+    },
+    {
+      "name": "wsl-stages-a-b-20261008-a-td3-a1-c1.tar.gz",
+      "bytes": 714458314,
+      "sha256": "3b4c58e4ad713ae89339d2fd6a2434f4c4118af63b17e8fa3ab426fdce1b78d1"
+    },
+    {
+      "name": "wsl-stages-a-b-20261008-b-ddpg-a0-c0-clr0.0001-alr0.0001.tar.gz",
+      "bytes": 1159846828,
+      "sha256": "89a1997325aa98ec3fa6bcc056acf5c773bf746f268f16b5cc191368761217c1"
+    },
+    {
+      "name": "wsl-stages-a-b-20261008-b-ddpg-a0-c0-clr0.0003-alr0.0003.tar.gz",
+      "bytes": 869175590,
+      "sha256": "28e3162bf1ec46d246997c5629148131d7ccdee9d2087c5a00ea86be99d1bacd"
+    },
+    {
+      "name": "wsl-stages-a-b-20261008-b-ddpg-a0-c1-clr0.0001-alr0.0001.tar.gz",
+      "bytes": 896407324,
+      "sha256": "7b1341e63a6b046da5d85bab6f674f761c4e30c4be4426abd24bc6e189bc072b"
+    },
+    {
+      "name": "wsl-stages-a-b-20261008-b-ddpg-a0-c1-clr0.0001-alr0.0003.tar.gz",
+      "bytes": 834630912,
+      "sha256": "236fb29da230a9fb9b7335febaa2f1cabb8b42e0651d490ad9569e1eb95b98bb"
+    },
+    {
+      "name": "wsl-stages-a-b-20261008-b-ddpg-a0-c1-clr0.0003-alr0.0001.tar.gz",
+      "bytes": 869773187,
+      "sha256": "4b6480823b7ea1461f86ea8eeee0a627e2a542f427aaf416cb9f7e1abaf2e45e"
+    },
+    {
+      "name": "wsl-stages-a-b-20261008-b-ddpg-a0-c1-clr0.0003-alr0.0003.tar.gz",
+      "bytes": 870391838,
+      "sha256": "1dcaeddf1e497f0e7828643005c44f2ab2ac619959ba6361e1dfee451270e861"
+    },
+    {
+      "name": "wsl-stages-a-b-20261008-provenance.tar.gz",
+      "bytes": 2467653,
+      "sha256": "318a0a10f2cc71573f467234f42e2eb4e477ea6583cd6b4b1e64a4d9972f4eb0"
+    }
+  ],
+  "exporter_sha256": "132f249174fe4bfa733b6e231651c471fdbbb66751aacbfd5da81dea1e3d53f6"
+}
