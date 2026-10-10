@@ -101,6 +101,11 @@ Use `--help` on a command for its arguments.
   learning/calibration figures, seed-level tables and complete raw-data release assets.
   WSL and Mac datasets remain separate.
 
+- [WSL (Paris) — Target-update interventions — 10 October 2026](results/wsl/target-updates-20261010/README.md):
+  20 validated DDPG runs comparing soft τ=0.001 and hard target copies every
+  400 critic updates against the historical WSL Stage A baseline; complete
+  tables, figures, checkpoints and raw-data release provenance.
+
 ## Long studies and TensorBoard
 
 [STUDY_PROTOCOL.md](docs/STUDY_PROTOCOL.md) defines the frozen 40-run comparison,

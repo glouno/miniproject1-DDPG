@@ -1,0 +1,32 @@
+{
+  "platform": "wsl",
+  "label": "wsl-target-updates-20261010",
+  "release_url": "https://github.com/glouno/miniproject1-DDPG/releases/tag/results-wsl-target-updates-20261010",
+  "completed_runs": 20,
+  "training_steps": 20000000,
+  "model_checkpoints": 980,
+  "recovery_files": 40,
+  "source_revision": "e68823c86f9a472f426c7fcd22b5c91053c391b4",
+  "finished_at": "2026-10-10T02:02:44.096815+00:00",
+  "exported_at": "2026-10-10T11:01:31.217784+00:00",
+  "raw_bytes": 1809523024,
+  "compressed_archive_bytes": 1584704771,
+  "archives": [
+    {
+      "name": "wsl-target-updates-20261010-hard-k400.tar.gz",
+      "bytes": 801994417,
+      "sha256": "a6608b5ceae0986532a75695a2259cbbce87000188d82bf7563e52bb0d207a78"
+    },
+    {
+      "name": "wsl-target-updates-20261010-soft-tau-0.001.tar.gz",
+      "bytes": 780431668,
+      "sha256": "32e56593bdc83a2470e97a87e188ecc713e88360358c4944bdd22cf3c9d5e48d"
+    },
+    {
+      "name": "wsl-target-updates-20261010-provenance.tar.gz",
+      "bytes": 2278686,
+      "sha256": "4b97c324244967bea4a633189c9628d23a839b0f1ec5116e765d7252aa1d4865"
+    }
+  ],
+  "exporter_sha256": "226f985be57e3ec0b1e7a472506e9a5c422d2c98da9fd64b68758d87a58d33ea"
+}
