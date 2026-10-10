@@ -12,7 +12,7 @@ The user approved SVG generation on 2026-10-09. Both diagrams are now in
 - `lunarlander-observations.svg` / `.png` / `.pdf`
 - `lunarlander-actions.svg` / `.png` / `.pdf`
 
-The observation canvas is now 1200 × 620; the action canvas is 1200 × 850.
+The observation canvas is now 1200 × 600; the action canvas is 1200 × 850.
 PDFs use a 170 mm width and preserve each figure's aspect ratio. The action labels use
 mathematical subscripts. Contact leaders follow the indexed leg order.
 The figures preserve native hull geometry but simplify the articulated legs.
@@ -30,7 +30,41 @@ uv run --locked python report/scripts/build_lunarlander_figures.py
 using Sharp and Playwright from the Codex bundled runtime. See its header for
 invocation. The SVG generator itself only needs Python's standard library.
 
-### Observation revision after visual feedback
+### Current revision from the user's sketch (2026-10-10)
+
+The current observation figure follows
+`references/lunarlander-observations-sketch.png`, a preserved copy of the
+user's drawing. This revision supersedes both earlier observation layouts.
+
+- Left: an upright airborne lander offset right of the target, arrows for
+  positive and negative v_x and v_y, horizontal x and vertical y measurements,
+  and x signs beneath the pad. The centre dot is drawn above the velocity
+  arrows. Contact labels and leaders appear only in the right-hand examples.
+- Right top: θ < 0, θ = 0, θ > 0 as separate orientations against upright guides.
+- Right middle: ω < 0 and ω > 0 with faint grey previous orientations and
+  purple direction arcs. The main scene has no motion trails.
+- Right bottom: (c_L, c_R) = (1, 0), (1, 1), (0, 1), (0, 0), illustrated
+  by which toe touches the ground. Their y positions are computed from toe
+  geometry; the (0, 0) craft has a visible gap above the ground.
+
+The palette remains blue for position, teal for linear motion, purple for
+rotation, neutral grey for motion trails and contact leaders, and a purple
+lander. Numeric bounds and the full-turn inset are omitted from this latest
+composition in favour of the user's qualitative examples. All bounds remain
+documented in the earlier design notes and saved reference metadata.
+
+Arrow marks above the velocity symbols match the supplied drawing and are
+drawn as SVG geometry for reliable rendering. The state entries remain scalar
+components. Physical leg names replace numeric indices: c_R = c_0 and
+c_L = c_1, so the displayed state vector ends with c_R, c_L to preserve the
+actual Gymnasium order. The y datum is still pad height + 0.6 world units;
+the vertical y measurement ends at that dashed datum, not the pad surface.
+
+The SVG remains editable. PNG and vector PDF versions have been regenerated;
+browser checks found no overlapping text labels or labels outside the canvas.
+The prior observation version is retained as `previous/lunarlander-observations-v2.*`.
+
+### Earlier observation revision after visual feedback
 
 The latest generated observation SVG supersedes the initial composition
 described below. It removes the bottom bounds table, explanatory prose,

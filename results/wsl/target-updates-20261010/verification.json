@@ -1,0 +1,10 @@
+{
+  "platform": "wsl",
+  "status": "passed",
+  "completed_runs": 20,
+  "checkpoint_rows": 980,
+  "archived_files": 4820,
+  "model_checkpoints": 980,
+  "recovery_files": 40,
+  "method": "Frozen source/config/probe hashes and completion validations checked; every archived file read back and matched against original size and SHA-256."
+}

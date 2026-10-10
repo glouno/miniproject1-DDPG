@@ -1,0 +1,77 @@
+{
+  "platform": "wsl",
+  "host": "paris-devbox-wsl",
+  "verified_at": "2026-10-09T22:49:47.107842+00:00",
+  "service": "rl-target-updates-wsl-20261010.service",
+  "workers": 8,
+  "total_jobs": 20,
+  "source_revision": "e68823c",
+  "tests": "35 passed; two-job frozen smoke queue passed",
+  "active_progress": [
+    {
+      "job": "hard-k400-seed20",
+      "status": "training",
+      "step": 7000,
+      "max_steps": 1000000,
+      "updated_at": "2026-10-09T22:49:45.432365+00:00",
+      "elapsed_seconds": 10.407328358967789
+    },
+    {
+      "job": "hard-k400-seed21",
+      "status": "training",
+      "step": 7000,
+      "max_steps": 1000000,
+      "updated_at": "2026-10-09T22:49:44.483976+00:00",
+      "elapsed_seconds": 9.376830915978644
+    },
+    {
+      "job": "hard-k400-seed22",
+      "status": "training",
+      "step": 7000,
+      "max_steps": 1000000,
+      "updated_at": "2026-10-09T22:49:45.125622+00:00",
+      "elapsed_seconds": 10.166073405009229
+    },
+    {
+      "job": "hard-k400-seed23",
+      "status": "training",
+      "step": 7000,
+      "max_steps": 1000000,
+      "updated_at": "2026-10-09T22:49:45.634717+00:00",
+      "elapsed_seconds": 10.604069495981093
+    },
+    {
+      "job": "soft-tau-0.001-seed20",
+      "status": "training",
+      "step": 7000,
+      "max_steps": 1000000,
+      "updated_at": "2026-10-09T22:49:45.735595+00:00",
+      "elapsed_seconds": 10.758820777002256
+    },
+    {
+      "job": "soft-tau-0.001-seed21",
+      "status": "training",
+      "step": 7000,
+      "max_steps": 1000000,
+      "updated_at": "2026-10-09T22:49:44.846666+00:00",
+      "elapsed_seconds": 9.797004078980535
+    },
+    {
+      "job": "soft-tau-0.001-seed22",
+      "status": "training",
+      "step": 7000,
+      "max_steps": 1000000,
+      "updated_at": "2026-10-09T22:49:45.822331+00:00",
+      "elapsed_seconds": 10.690695433004294
+    },
+    {
+      "job": "soft-tau-0.001-seed23",
+      "status": "training",
+      "step": 7000,
+      "max_steps": 1000000,
+      "updated_at": "2026-10-09T22:49:45.780339+00:00",
+      "elapsed_seconds": 10.664907001017127
+    }
+  ],
+  "service_state": "MainPID=3802418\nActiveState=active\nSubState=running\n"
+}

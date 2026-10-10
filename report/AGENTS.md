@@ -15,3 +15,12 @@ checkpoints, configurations and frozen sources must remain unchanged.
 `scripts/build_results_tables.py` reads the Mac Stage A, WSL Stage B and Mac
 focused follow-up records. It writes a generated LaTeX fragment for the shared
 report, with explicit hyperparameter columns and final seed-averaged results.
+
+`scripts/build_target_update_figures.py` uses the published
+`results/wsl/target-updates-20261010/` metrics to match Figure 8's reward/bias
+panels. It validates all 20 intervention runs and uses Mac Stage A `ddpg-a0-c1`
+(critic LN on, actor LN off) for the plotted baseline and table improvements in raw units,
+matching the existing learning-rate/update-ratio reference. Outputs are in
+`generated/ddpg-target-updates/`. The release's significance tests compare
+against a separate, unplotted historical WSL baseline; do not relabel those tests
+as comparisons against the plotted Mac baseline.

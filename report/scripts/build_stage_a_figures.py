@@ -1,4 +1,4 @@
-"""Generate report figures from the published Mac Stage A checkpoint metrics.
+"""Generate reward and bias figures from published Mac Stage A checkpoint metrics.
 
 Run from the repository root:
     uv run --locked --with seaborn==0.13.2 python report/scripts/build_stage_a_figures.py
@@ -28,12 +28,12 @@ SETTINGS = ((False, False), (False, True), (True, False), (True, True))
 METRICS = (
     ("on_policy_return", "Episode reward", "return_mean"),
     ("on_policy_bias_q1", r"Bias ($Q_1-G$)", "bias_mean"),
-    ("on_policy_rmse_q1", r"Critic RMSE ($Q_1$)", "rmse_mean"),
 )
 SEEDS = tuple(range(20, 30))
 STEPS = np.array([0, *range(5000, 50001, 5000), *range(75000, 1000001, 25000)])
 RESAMPLES = 10000
 BOOTSTRAP_SEED = 419
+MARKER_STEP = 10000
 
 
 def load():
@@ -82,7 +82,10 @@ def caption(algorithm, summary):
         "confidence intervals over training seeds (10,000 resamples). Each checkpoint uses 20 deterministic held-out episodes. "
         "Reward is undiscounted over at most 1,000 transitions; the dashed reward line marks the project's "
         f"200-reward success threshold. Signed bias is {critic_symbol} minus discounted Monte Carlo return "
-        "(gamma=0.99); positive values mean overestimation. RMSE is averaged over episodes, then seeds. "
+        "(gamma=0.99); positive values mean overestimation. "
+        + ("Purple vertical dashed lines with arrow labels mark 10,000 training transitions. "
+           if algorithm == "ddpg" else "")
+        +
         "Monte Carlo continuations are observed to termination or 10,000 steps; capped trajectories remain included. "
         f"{finding} Final-reward paired sign-flip tests, Holm-adjusted across four primary contrasts: "
         f"critic LN on versus off with actor LN off, p={critic:.4f}; "
@@ -95,13 +98,13 @@ def main():
     groups, summary = load()
     OUT.mkdir(parents=True, exist_ok=True)
     # A wide canvas with adequate height leaves room for curves and reward ticks.
-    # Scale text so it remains readable when included at 170 mm report width.
+    # Scale text so it remains readable when included at 85 mm report width.
     sns.set_theme(context="paper", style="ticks", palette="colorblind", font_scale=1.5)
     colors = sns.color_palette("colorblind", 4)
     indices = np.random.default_rng(BOOTSTRAP_SEED).integers(0, len(SEEDS), (RESAMPLES, len(SEEDS)))
     statistics, captions, artifacts = [], [], []
     for algorithm in ("ddpg", "td3"):
-        fig, axes = plt.subplots(1, 3, figsize=(12, 4.9), layout="constrained")
+        fig, axes = plt.subplots(1, len(METRICS), figsize=(8.4, 4.9), layout="constrained")
         for (actor_ln, critic_ln), color in zip(SETTINGS, colors):
             condition = f"{algorithm}-a{int(actor_ln)}-c{int(critic_ln)}"
             label = f"Actor LN {'on' if actor_ln else 'off'}, Critic LN {'on' if critic_ln else 'off'}"
@@ -125,13 +128,23 @@ def main():
         else:
             axes[0].set(ylim=(lower, max(upper, 350)), yticks=[-400, -200, 0, 100, 200, 300])
         axes[1].axhline(0, color="0.4", linestyle="--", linewidth=0.8, zorder=0)
+        marker_labels = []
+        for ax in (axes if algorithm == "ddpg" else ()):
+            ax.axvline(MARKER_STEP / 1e6, color="#8c2d91", linestyle="--", linewidth=0.8, zorder=8)
+            marker_labels.append(ax.annotate(
+                "10,000 steps", xy=(MARKER_STEP / 1e6, 0.87), xycoords=ax.get_xaxis_transform(),
+                xytext=(0.18, 0.98), textcoords="axes fraction", ha="left", va="top",
+                fontsize=10, color="#8c2d91", zorder=9,
+                arrowprops=dict(arrowstyle="->", color="#8c2d91", linewidth=0.8),
+                bbox=dict(facecolor="white", edgecolor="none", alpha=0.9, pad=1),
+            ))
         sns.despine(fig=fig)
         handles, labels = axes[0].get_legend_handles_labels()
         legend = fig.legend(handles, labels, loc="outside upper center", ncols=2, frameon=False)
         fig.canvas.draw()
         # Check visible labels at the native report dimensions before exporting.
         renderer = fig.canvas.get_renderer()
-        for artist in [legend, *(a for ax in axes for a in (ax.xaxis.label, ax.yaxis.label))]:
+        for artist in [legend, *marker_labels, *(a for ax in axes for a in (ax.xaxis.label, ax.yaxis.label))]:
             box = artist.get_window_extent(renderer)
             assert box.x0 >= -0.01 and box.y0 >= -0.01 and box.x1 <= fig.bbox.width + 0.01 and box.y1 <= fig.bbox.height + 0.01, f"Clipped label: {artist}, {box.bounds}, {fig.bbox.bounds}"
         basename = f"stage-a-mac-{algorithm}"
@@ -159,8 +172,9 @@ def main():
         bootstrap_resamples=RESAMPLES, bootstrap_rng_seed=BOOTSTRAP_SEED,
         uncertainty="Pointwise 95% percentile-bootstrap CI over training seeds; no smoothing",
         theme=dict(context="paper", style="ticks", palette="colorblind", font_scale=1.5),
-        figure_width_mm=304.8, figure_height_mm=124.46, intended_report_width_mm=170,
+        figure_width_mm=213.36, figure_height_mm=124.46, intended_report_width_mm=85,
         reward_success_threshold=200,
+        vertical_marker_step=MARKER_STEP, vertical_marker_algorithms=["ddpg"],
         png_dpi=150, artifacts=artifacts,
         versions=dict(matplotlib=matplotlib.__version__, seaborn=sns.__version__, numpy=np.__version__),
         source_sha256={str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest()

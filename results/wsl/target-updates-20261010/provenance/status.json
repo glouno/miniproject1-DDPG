@@ -1,0 +1,113 @@
+{
+  "status": "complete",
+  "started_at": "2026-10-09T22:49:32.149524+00:00",
+  "runner_pid": 3802418,
+  "workers": 8,
+  "total_jobs": 20,
+  "jobs": {
+    "T/hard-k400-seed20": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/target-updates-wsl-20261010/logs/T-hard-k400-seed20.log"
+    },
+    "T/soft-tau-0.001-seed23": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/target-updates-wsl-20261010/logs/T-soft-tau-0.001-seed23.log"
+    },
+    "T/hard-k400-seed22": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/target-updates-wsl-20261010/logs/T-hard-k400-seed22.log"
+    },
+    "T/hard-k400-seed23": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/target-updates-wsl-20261010/logs/T-hard-k400-seed23.log"
+    },
+    "T/soft-tau-0.001-seed20": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/target-updates-wsl-20261010/logs/T-soft-tau-0.001-seed20.log"
+    },
+    "T/hard-k400-seed21": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/target-updates-wsl-20261010/logs/T-hard-k400-seed21.log"
+    },
+    "T/soft-tau-0.001-seed22": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/target-updates-wsl-20261010/logs/T-soft-tau-0.001-seed22.log"
+    },
+    "T/soft-tau-0.001-seed21": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/target-updates-wsl-20261010/logs/T-soft-tau-0.001-seed21.log"
+    },
+    "T/hard-k400-seed24": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/target-updates-wsl-20261010/logs/T-hard-k400-seed24.log"
+    },
+    "T/hard-k400-seed26": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/target-updates-wsl-20261010/logs/T-hard-k400-seed26.log"
+    },
+    "T/hard-k400-seed25": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/target-updates-wsl-20261010/logs/T-hard-k400-seed25.log"
+    },
+    "T/hard-k400-seed27": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/target-updates-wsl-20261010/logs/T-hard-k400-seed27.log"
+    },
+    "T/soft-tau-0.001-seed26": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/target-updates-wsl-20261010/logs/T-soft-tau-0.001-seed26.log"
+    },
+    "T/soft-tau-0.001-seed25": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/target-updates-wsl-20261010/logs/T-soft-tau-0.001-seed25.log"
+    },
+    "T/soft-tau-0.001-seed24": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/target-updates-wsl-20261010/logs/T-soft-tau-0.001-seed24.log"
+    },
+    "T/soft-tau-0.001-seed27": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/target-updates-wsl-20261010/logs/T-soft-tau-0.001-seed27.log"
+    },
+    "T/hard-k400-seed28": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/target-updates-wsl-20261010/logs/T-hard-k400-seed28.log"
+    },
+    "T/soft-tau-0.001-seed28": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/target-updates-wsl-20261010/logs/T-soft-tau-0.001-seed28.log"
+    },
+    "T/hard-k400-seed29": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/target-updates-wsl-20261010/logs/T-hard-k400-seed29.log"
+    },
+    "T/soft-tau-0.001-seed29": {
+      "status": "complete",
+      "exit_code": 0,
+      "log": "/home/glouno/src/Sorbonne/RL/miniproject/outputs/target-updates-wsl-20261010/logs/T-soft-tau-0.001-seed29.log"
+    }
+  },
+  "active": {},
+  "updated_at": "2026-10-10T02:02:44.077830+00:00",
+  "elapsed_seconds": 11593.333525547001,
+  "finished_at": "2026-10-10T02:02:44.096815+00:00"
+}

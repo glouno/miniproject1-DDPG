@@ -1,4 +1,4 @@
-"""Compare DDPG learning rates and critic:actor update ratios from saved data.
+"""Compare reward and bias for DDPG learning rates and critic:actor update ratios.
 
 Run from the repository root:
     uv run --locked --with seaborn==0.13.2 python report/scripts/build_hyperparameter_figures.py
@@ -111,7 +111,7 @@ def check_settings(group, baseline, critic_lr, actor_lr, ratio):
 
 
 def draw(name, groups, labels, ncols, statistics):
-    fig, axes = plt.subplots(1, 3, figsize=(12, 4.9), layout="constrained")
+    fig, axes = plt.subplots(1, len(METRICS), figsize=(8.4, 4.9), layout="constrained")
     indices = np.random.default_rng(BOOTSTRAP_SEED).integers(0, 10, (RESAMPLES, 10))
     for group, label, color in zip(groups, labels, sns.color_palette("colorblind", len(groups))):
         for ax, (metric, ylabel, _) in zip(axes, METRICS):
@@ -169,8 +169,8 @@ def main():
         "shading shows pointwise 95% percentile-bootstrap confidence intervals over seeds (10,000 resamples). "
         "Every checkpoint evaluates 20 deterministic held-out episodes. Reward is undiscounted over at most 1,000 "
         "transitions; the dashed reward line marks the 200-reward success criterion. Bias is Q minus discounted "
-        "Monte Carlo return G (gamma=0.99), with positive values indicating overestimation. RMSE is averaged over "
-        "episodes, then seeds. Observed Monte Carlo continuations are capped at 10,000 steps. "
+        "Monte Carlo return G (gamma=0.99), with positive values indicating overestimation. "
+        "Observed Monte Carlo continuations are capped at 10,000 steps. "
     )
     tests = read_json(WSL / "analysis/B/summary.json")["primary_return_contrasts"]
     captions = {

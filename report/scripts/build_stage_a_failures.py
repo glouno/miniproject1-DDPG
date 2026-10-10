@@ -9,7 +9,8 @@ checkpoint-1000000.pt,diagnostics/on_policy-1000000.npz}, extracted from the
 checksum-verified Mac release. Replays saved actions, checks every original
 pre-action observation and reward exactly, and includes the final post-action
 observation when identifying contact. Contact events use active Box2D manifolds;
-landing requires both feet supported within the marked pad at sleep termination.
+episode success uses Gymnasium's documented total-return threshold of 200.
+The +100 sleep-termination reward is recorded separately, with no pad check.
 Critic error colours use final online Q at each saved pre-action state/action and
 G from the original reward continuation; sampled Q and MC values are rechecked.
 No training or original records change.
@@ -42,9 +43,9 @@ OUT = ROOT / "report/generated/stage-a-mac-failures"
 SEEDS = tuple(range(20, 30))
 HORIZON = 1000
 STEP = 1_000_000
-OUTCOMES = ("collision", "boundary_exit", "successful_landing", "asleep_without_pad_landing", "performance_timeout")
+OUTCOMES = ("collision", "boundary_exit", "asleep_high_return", "asleep_low_return", "performance_timeout")
 CONTACTS = ("either_leg_ever", "both_legs_simultaneously_ever")
-LABELS = ("Collision", "Boundary exit", "Successful landing", "Asleep without pad landing", "Performance timeout",
+LABELS = ("Collision", "Boundary exit", "Asleep (R >= 200)", "Asleep (R < 200)", "Performance timeout",
           "Either leg ever touched", "Both legs simultaneously")
 
 
@@ -60,17 +61,18 @@ def write_csv(path, rows):
         writer.writerows(rows)
 
 
-def classify(terminated, collision, boundary, asleep, both_feet_on_pad):
-    # Multiple terminal signals are retained separately in episode output.
-    # A failed terminal signal has priority over rest; boundary precedes collision,
-    # matching the original evaluator. Natural termination at step 1000 wins over timeout.
+def classify(terminated, collision, boundary, asleep, performance_return):
+    # Gymnasium documents episode success as total reward >= 200. This is
+    # independent of pad geometry and the +100 sleep-termination reward.
+    # For failures, sleep takes precedence because the environment's second
+    # terminal if-statement overwrites -100 with +100 when signals coincide.
     if terminated:
+        if asleep:
+            return "asleep_high_return" if performance_return >= 200 else "asleep_low_return"
         if boundary:
             return "boundary_exit"
         if collision:
             return "collision"
-        if asleep:
-            return "successful_landing" if both_feet_on_pad else "asleep_without_pad_landing"
         raise AssertionError("Unrecognized natural termination")
     return "performance_timeout"
 
@@ -168,12 +170,12 @@ def collect(raw):
                 both_feet_on_pad = all(points and all(pad[0]-1e-6 <= x <= pad[1]+1e-6 for x, y in points)
                                        for points in terminal_points)
                 centre_inside_pad = bool(pad[0] <= xy[-1][0] <= pad[1])
-                outcome = classify(term, collision, boundary, asleep, both_feet_on_pad)
+                total = float(sum(replay_rewards))
+                outcome = classify(term, collision, boundary, asleep, total)
                 contacts = np.asarray(physical_contacts, dtype=bool)
                 flag_contacts = np.asarray(observations)[:, 6:8] > 0
                 either = bool(contacts.any())
                 both = bool(contacts.all(axis=1).any())
-                total = float(sum(replay_rewards))
                 assert total == episode["performance_return"]
                 record = dict(training_seed=seed, evaluation_seed=eval_seed, outcome=outcome,
                               performance_steps=len(actions), performance_return=total,
@@ -188,6 +190,9 @@ def collect(raw):
                               terminal_foot_points=json.dumps(terminal_points),
                               collision_flag=collision, boundary_flag=boundary, asleep_flag=asleep,
                               natural_termination=bool(term), simultaneous_terminal_signals=int(collision)+int(boundary)+int(asleep),
+                              environment_landing_bonus=bool(term and asleep and replay_rewards[-1] == 100),
+                              benchmark_success=bool(total >= 200),
+                              last_performance_reward=float(replay_rewards[-1]),
                               diagnostic_ending=episode["ending"], diagnostic_steps=episode["length"],
                               diagnostic_censored=episode["censored"],
                               first_either_leg_step=int(np.flatnonzero(contacts.any(axis=1))[0]) if either else -1,
@@ -292,7 +297,7 @@ def plot_rates(per_seed, aggregate):
             ax.text(103, i, f"{means[i]:.1f}% ({rows[i]['count']}/200)", va="center", fontsize=11)
         ax.errorbar(means, y, xerr=errors, fmt="D", color="0.15", markersize=5, capsize=3, zorder=4)
         labels = [r["label"] for r in rows]
-        labels = [label.replace("Asleep without pad landing", "Asleep without\npad landing") for label in labels]
+        labels = [label.replace("Asleep (R >= 200)", "Asleep\n(R >= 200)") for label in labels]
         if len(keys) == 2:
             labels = ["Either leg ever\ntouched", "Both legs touched\nsimultaneously"]
         ax.set(yticks=y, yticklabels=labels, xlim=(0, 144), xticks=[0, 25, 50, 75, 100],
@@ -302,96 +307,129 @@ def plot_rates(per_seed, aggregate):
     save_fig(fig, "stage-a-mac-ddpg-failure-rates")
 
 
-PLOT_KEYS = ("collision", "boundary_exit", "performance_timeout", "successful_landing")
-PLOT_LABELS = ("Collision", "Boundary exit", "Performance timeout", "Successful landing")
+FAILURE_KEYS = ("collision", "boundary_exit", "performance_timeout", "asleep_low_return")
+FAILURE_LABELS = ("Collision", "Boundary exit", "Performance timeout", "Asleep (R < 200)")
+PLOT_KEYS = FAILURE_KEYS + ("asleep_high_return",)
 
 
-def plot_flights(selected, flights):
-    fig, axes = plt.subplots(2, 2, figsize=(12, 8.5), sharex=True, sharey=True, layout="constrained")
-    examples = [flights[(r["training_seed"], r["evaluation_seed"])]
-                for key in PLOT_KEYS for r in selected.get(key, [])]
-    max_y = max(float(f["xy"][:, 1].max()) for f in examples)
-    min_y = min(-1, min(float(f["xy"][:, 1].min()) for f in examples)-.5)
-    limit = max(50, 50*np.ceil(max(float(np.abs(f["bias"]).max()) for f in examples)/50))
-    norm = TwoSlopeNorm(vmin=-limit, vcenter=0, vmax=limit)
-    cmap = plt.get_cmap("RdBu_r")
-    for ax, key, label in zip(axes.flat, PLOT_KEYS, PLOT_LABELS):
-        group = selected.get(key, [])
-        title_rows = [label]
-        for number, record in enumerate(group, 1):
-            flight = flights[(record["training_seed"], record["evaluation_seed"])]; xy = flight["xy"]
-            terrain = flight["terrain"]
-            ax.fill_between(terrain[:, 0], min_y, terrain[:, 1], color="0.96", zorder=0)
-            ax.plot(terrain[:, 0], terrain[:, 1], color="0.65", linewidth=.9, zorder=1)
-            ax.plot(flight["pad"], [0, 0], color="0.2", linewidth=3, zorder=2)
-            segments = np.stack((xy[:-1], xy[1:]), axis=1)
-            lc = LineCollection(segments, cmap=cmap, norm=norm, linewidth=1.9,
-                                alpha=1, linestyles="solid", zorder=3)
-            lc.set_array(flight["bias"])
-            ax.add_collection(lc)
-            distances = np.r_[0, np.cumsum(np.linalg.norm(np.diff(xy, axis=0), axis=1))]
-            label_index = int(np.searchsorted(distances, .35*distances[-1]))
-            ax.text(*xy[label_index], str(number), color="0.2", fontsize=11, zorder=7,
-                    bbox=dict(facecolor="white", edgecolor="none", pad=.4))
-            ax.scatter(*xy[0], facecolors="white", edgecolors="0.2", s=32, zorder=4)
-            if record["asleep_flag"]:
-                ax.scatter(*xy[-1], facecolors="white", edgecolors="0.15", marker="D", s=55, zorder=5)
-            else:
-                ax.scatter(*xy[-1], color="0.2", marker="X", s=42, zorder=4)
-            title_rows.append(f"{number}: Train {record['training_seed']} / Eval {record['evaluation_seed']} | R={record['performance_return']:.0f}")
-        if not group:
-            ax.text(.5, .5, "No qualifying flights", transform=ax.transAxes, ha="center")
-        ax.set_title("\n".join(title_rows), fontsize=13, linespacing=1.15)
-        ax.axvline(-10, color="0.6", linestyle="--", linewidth=.8, zorder=0)
-        ax.axvline(10, color="0.6", linestyle="--", linewidth=.8, zorder=0)
-        ax.set(xlim=(-10.8, 10.8), ylim=(min_y, max_y+.5), xticks=[-10, -5, 0, 5, 10],
-               xlabel="Horizontal position from pad centre (m)", ylabel="Height above pad surface (m)")
-        ax.tick_params(labelsize=12, labelbottom=True, labelleft=True)
-        ax.xaxis.label.set_fontsize(13); ax.yaxis.label.set_fontsize(13)
-        ax.set_aspect("auto")
-    bar = fig.colorbar(plt.cm.ScalarMappable(norm=norm, cmap=cmap), ax=axes,
+def draw_flight_panel(ax, key, label, selected, flights, min_y, max_y, norm):
+    group = selected.get(key, [])
+    title_rows = [label]
+    for number, record in enumerate(group, 1):
+        flight = flights[(record["training_seed"], record["evaluation_seed"])]; xy = flight["xy"]
+        terrain = flight["terrain"]
+        ax.fill_between(terrain[:, 0], min_y, terrain[:, 1], color="0.96", zorder=0)
+        ax.plot(terrain[:, 0], terrain[:, 1], color="0.65", linewidth=.9, zorder=1)
+        ax.plot(flight["pad"], [0, 0], color="0.2", linewidth=3, zorder=2)
+        segments = np.stack((xy[:-1], xy[1:]), axis=1)
+        lc = LineCollection(segments, cmap="RdBu_r", norm=norm, linewidth=1.9,
+                            alpha=1, linestyles="solid", zorder=3)
+        lc.set_array(flight["bias"])
+        ax.add_collection(lc)
+        distances = np.r_[0, np.cumsum(np.linalg.norm(np.diff(xy, axis=0), axis=1))]
+        label_index = int(np.searchsorted(distances, .35*distances[-1]))
+        ax.text(*xy[label_index], str(number), color="0.2", fontsize=11, zorder=7,
+                bbox=dict(facecolor="white", edgecolor="none", pad=.4))
+        ax.scatter(*xy[0], facecolors="white", edgecolors="0.2", s=32, zorder=4)
+        if record["asleep_flag"]:
+            ax.scatter(*xy[-1], facecolors="white", edgecolors="0.15", marker="D", s=55, zorder=5)
+        else:
+            ax.scatter(*xy[-1], color="0.2", marker="X", s=42, zorder=4)
+        title_rows.append(f"{number}: Train {record['training_seed']} / Eval {record['evaluation_seed']} | R={record['performance_return']:.0f}")
+    if not group:
+        ax.text(.5, .5, "No qualifying flights", transform=ax.transAxes, ha="center")
+    ax.set_title("\n".join(title_rows), fontsize=13, linespacing=1.15)
+    ax.axvline(-10, color="0.6", linestyle="--", linewidth=.8, zorder=0)
+    ax.axvline(10, color="0.6", linestyle="--", linewidth=.8, zorder=0)
+    ax.set(xlim=(-10.8, 10.8), ylim=(min_y, max_y+.5), xticks=[-10, -5, 0, 5, 10],
+           xlabel="Horizontal position from pad centre (m)", ylabel="Height above pad surface (m)")
+    ax.tick_params(labelsize=12, labelbottom=True, labelleft=True)
+    ax.xaxis.label.set_fontsize(13); ax.yaxis.label.set_fontsize(13)
+    ax.set_aspect("auto")
+
+
+def finish_flight_figure(fig, axes, norm, name):
+    bar = fig.colorbar(plt.cm.ScalarMappable(norm=norm, cmap="RdBu_r"), ax=axes,
                        location="right", fraction=.035, pad=.025, shrink=.75)
     bar.set_label("Signed critic error Q - G", fontsize=14)
+    tick_limit = max(50, 100*np.floor(norm.vmax/100))
+    bar.set_ticks(np.linspace(-tick_limit, tick_limit, 5))
     handles = [Line2D([], [], marker="o", color="0.2", markerfacecolor="white", linestyle="None", label="Start"),
                Line2D([], [], marker="X", color="0.2", linestyle="None", label="Termination / cutoff"),
                Line2D([], [], marker="D", color="0.15", markerfacecolor="white", linestyle="None", label="Asleep")]
     fig.legend(handles=handles, loc="outside lower center", ncols=3, frameon=False, fontsize=13)
     sns.despine(fig=fig)
-    save_fig(fig, "stage-a-mac-ddpg-representative-flights")
+    save_fig(fig, name)
+
+
+def plot_flights(selected, flights):
+    examples = [flights[(r["training_seed"], r["evaluation_seed"])]
+                for key in PLOT_KEYS for r in selected.get(key, [])]
+    limit = max(50, 50*np.ceil(max(float(np.abs(f["bias"]).max()) for f in examples)/50))
+    norm = TwoSlopeNorm(vmin=-limit, vcenter=0, vmax=limit)
+    failure_examples = [flights[(r["training_seed"], r["evaluation_seed"])]
+                        for key in FAILURE_KEYS for r in selected.get(key, [])]
+    max_y = max(float(f["xy"][:, 1].max()) for f in failure_examples)
+    min_y = min(-1, min(float(f["xy"][:, 1].min()) for f in failure_examples)-.5)
+    fig, axes = plt.subplots(2, 2, figsize=(12, 8.5), sharex=True, sharey=True, layout="constrained")
+    for ax, key, label in zip(axes.flat, FAILURE_KEYS, FAILURE_LABELS):
+        draw_flight_panel(ax, key, label, selected, flights, min_y, max_y, norm)
+    finish_flight_figure(fig, axes, norm, "stage-a-mac-ddpg-representative-flights")
+    landing_examples = [flights[(r["training_seed"], r["evaluation_seed"])]
+                        for r in selected.get("asleep_high_return", [])]
+    max_y = max(float(f["xy"][:, 1].max()) for f in landing_examples)
+    min_y = min(-1, min(float(f["xy"][:, 1].min()) for f in landing_examples)-.5)
+    fig, ax = plt.subplots(figsize=(8, 4.5), layout="constrained")
+    draw_flight_panel(ax, "asleep_high_return", "Asleep (R >= 200)", selected, flights, min_y, max_y, norm)
+    finish_flight_figure(fig, ax, norm, "stage-a-mac-ddpg-successful-landings")
     return float(limit)
 
 
 def documents(aggregate, selected, records):
+    successful = sum(r["outcome"] == "asleep_high_return" for r in records)
+    asleep_low = sum(r["outcome"] == "asleep_low_return" for r in records)
+    asleep_total = sum(r["environment_landing_bonus"] for r in records)
+    failure_total = len(records)-successful
     rates_caption = ("Final Mac Stage A DDPG, actor LN off and critic LN on: ten final policies, "
                      "20 evaluation flights each. Means and descriptive 95% percentile-bootstrap confidence "
-                     "intervals use ten training-seed rates (10,000 resamples, RNG 419). Five episode outcomes "
-                     "are exclusive at the 1,000-transition performance cutoff. Successful landing requires sleep, "
-                     "no collision or exit, and active ground contacts for both feet, with all their contact points "
-                     "inside the marked pad. Other sleep terminations are asleep without pad landing. Contact "
-                     "events overlap with outcomes and use active Box2D ground contacts, including the terminal "
-                     "observation, rather than the potentially stale observation flags. No significance tests were performed.")
-    flight_caption = ("Three final-policy flights for each of four outcomes, selected near the 25th, 50th and "
-                      "75th percentiles of the metric subset's 1,000-step performance returns, choosing an unused "
-                      "training seed when available; ties use training seed then evaluation seed. Four panels in a 2x2 grid "
-                      "share coordinate and colour scales. All trajectories are solid and fully opaque; "
-                      "segment colour is frozen online critic Q(s,a) minus discounted observed suffix return G "
-                      "(gamma=0.99, saved continuation up to 10,000 transitions). Q is recomputed at every saved "
-                      "pre-action state and checked against the original sampled Q; G matches the original sampled "
-                      "Monte Carlo targets. No critic bootstrap fills the tail. Grey curves show the terrain for the three "
-                      "evaluation seeds, and all flights share the marked pad. Titles identify training/evaluation "
-                      "seeds. Circles mark starts, crosses termination or cutoff, and open diamonds mark asleep "
-                      "termination. These examples illustrate behaviour; rates use all 200 flights.")
+                     "intervals use ten training-seed rates (10,000 resamples, RNG 419). Success is the "
+                     "Gymnasium documented episode criterion, total performance return R >= 200, with "
+                     "no extra pad-position, leg-contact or engine-off requirement. Other episodes are "
+                     "classified by termination or the 1,000-transition cutoff. The five episode outcomes "
+                     "are exclusive. The environment separately sets the terminal reward to +100 whenever "
+                     "the lander becomes asleep; this does not require pad position or R >= 200. Contact "
+                     "events overlap with outcomes and use active Box2D ground contacts, including termination. "
+                     "No significance tests were performed.")
+    selection_caption = ("Three flights per category are selected near its 25th, 50th and 75th percentiles "
+                         "of 1,000-step returns, preferring unused training seeds; ties use training seed "
+                         "then evaluation seed. Trajectories are solid and fully opaque, coloured by frozen "
+                         "online Q(s,a) minus discounted observed suffix G (gamma=0.99, saved continuation "
+                         "to termination or 10,000 transitions). Recomputed Q and G match original sampled "
+                         "calibration values. Grey curves show terrain, the dark bar marks the pad, circles "
+                         "starts, crosses termination/cutoff, and open diamonds asleep termination.")
+    flight_caption = (f"Four failure categories cover {failure_total}/200 flights ({100*failure_total/200:.1f}%): "
+                      "collision, boundary exit, performance timeout, and asleep with R < 200. " + selection_caption)
+    landing_caption = (f"Three representative asleep episodes with R >= 200 from {successful}/200 qualifying flights "
+                       f"({100*successful/200:.1f}%), using the official R >= 200 criterion. No pad check is imposed; this group is defined by sleep and R >= 200. "
+                       "The same Q-G colour limits and ticks are used as in the failure grid; the vertical "
+                       "range is adjusted to these flights. " + selection_caption)
     captions = {"stage-a-mac-ddpg-failure-rates": rates_caption,
-                "stage-a-mac-ddpg-representative-flights": flight_caption}
-    lines = ["# Mac Stage A final-policy outcomes and critic-coloured flights", "",
+                "stage-a-mac-ddpg-representative-flights": flight_caption,
+                "stage-a-mac-ddpg-successful-landings": landing_caption}
+    lines = ["# Mac Stage A final-policy outcomes using Gymnasium's success criterion", "",
              "| Metric | Average rate | Flights | SD across training seeds | 95% seed-bootstrap CI |",
              "|---|---:|---:|---:|---:|"]
     for r in aggregate:
         lines.append(f"| {r['label']} | {100*r['mean_rate']:.1f}% | {r['count']}/200 | {100*r['sd_across_training_seeds']:.1f} pp | [{100*r['ci95_low']:.1f}, {100*r['ci95_high']:.1f}]% |")
-    lines += ["", rates_caption, "", flight_caption, "", "## Selected flights", "", json.dumps(selected, indent=2)]
+    lines += ["", rates_caption, "", f"Environment +100 sleep-termination reward: {asleep_total}/200 ({100*asleep_total/200:.1f}%).",
+              "", "Source: https://gymnasium.farama.org/environments/box2d/lunar_lander/#rewards", "",
+              flight_caption, "", landing_caption, "", "## Selected flights", "", json.dumps(selected, indent=2)]
     (OUT / "analysis.md").write_text("\n".join(lines)+"\n")
     (OUT / "captions.md").write_text("\n\n".join(captions.values())+"\n")
-    table_rows = [f"{r['label']} & {100*r['mean_rate']:.1f}\\% & {r['count']}/200" + r" \\" for r in aggregate]
+    table_rows = []
+    for r in aggregate:
+        label = r['label'].replace('(R >= 200)', r'($R\ge200$)').replace('R < 200', r'$R<200$')
+        table_rows.append(f"{label} & {100*r['mean_rate']:.1f}\\% & {r['count']}/200" + r" \\" )
     table = r"""\begin{table}[htbp]
 \centering\small
 \setlength{\tabcolsep}{8pt}
@@ -404,24 +442,31 @@ Metric & Average rate & Flights \\
 """ + "\n".join(table_rows) + r"""
 \bottomrule
 \end{tabular}
-\caption{Final Mac Stage A DDPG performance and contact rates, actor LN off and critic LN on. Rates are averaged equally across ten training seeds (20--29), with twenty deterministic evaluation flights each (40000--40019). The first five outcomes are exclusive at natural termination or the 1,000-transition cutoff. Successful landing requires sleep without collision or exit, with both feet in active ground contact and all contact points inside the marked pad. Other sleep terminations are asleep without pad landing, including flights straddling a pad edge. Contact events use active Box2D contacts, including termination, and overlap with the outcomes. No reward threshold or engine-off condition is added. Natural termination on transition 1,000 takes precedence over timeout.}
+\caption{Final Mac Stage A DDPG performance and contact rates, actor LN off and critic LN on. Rates are averaged equally across ten training seeds (20--29), with twenty deterministic evaluation flights each (40000--40019). Sleep terminations are split into $R<200$ and $R\ge200$, using total performance return within 1,000 transitions. Gymnasium defines a solved episode as $R\ge200$, with no added pad-position, contact or engine-off requirement; all qualifying episodes in these data terminate asleep. Other episodes are classified by collision, boundary exit or cutoff. The first five rows are mutually exclusive and sum to 100\%. The environment's terminal reward of $+100$ for becoming asleep is a separate condition, independent of pad position and total return. Contact events use active Box2D contacts, including termination, and overlap with the outcomes. Natural termination on transition 1,000 takes precedence over timeout.}
 \label{tab:ddpg-failure-performance}
 \end{table}
 \FloatBarrier
 """
-    timeout = [r for r in records if r["outcome"] == "performance_timeout"]
-    successful = sum(r["outcome"] == "successful_landing" for r in records)
-    other = sum(r["outcome"] == "asleep_without_pad_landing" for r in records)
-    paragraph = (f"\\qquad Of the 26 sleep terminations, {successful} meet the both-feet-on-pad landing criterion and {other} do not. "
-                 f"Performance timeouts account for {len(timeout)} of the 200 flights; {sum(r[CONTACTS[0]] for r in timeout)} "
-                 f"had touched with either leg and {sum(r[CONTACTS[1]] for r in timeout)} with both legs simultaneously. "
-                 "Contact therefore does not guarantee completion within the performance budget. "
-                 "Figure~\\ref{fig:ddpg-metric-trajectories} illustrates collision, boundary exit, performance timeout and successful landing with three flights each.\n\n")
+    paragraph = (f"\\qquad The environment's $+100$ terminal reward is triggered by sleep, without a pad-position check. "
+                 f"Of the {asleep_total} sleep terminations, {successful} meet the documented total-return success criterion "
+                 f"$R\\ge200$ and {asleep_low} score below 200. In these data all successful episodes terminate asleep. "
+                                  "Gymnasium's definition is stated in its "
+                 "\\href{https://gymnasium.farama.org/environments/box2d/lunar_lander/\#rewards}{LunarLander documentation}. "
+                 f"Figure~\\ref{{fig:ddpg-metric-trajectories}} shows four failure outcomes ({100*failure_total/200:.1f}\\%); "
+                 f"Figure~\\ref{{fig:ddpg-successful-landings}} illustrates asleep episodes with $R\\ge200$ ({100*successful/200:.1f}\\%). "
+                 "Together, the five outcomes cover all 200 flights.\n\n")
     figure = r"""\begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{figures/stage-a-mac-ddpg-representative-flights.pdf}
-\caption{Three final-policy flights for each of four outcomes: collision, boundary exit, performance timeout and successful landing, arranged in a $2\times2$ grid. Flights are selected near the 25th, 50th and 75th percentiles of each outcome subset's performance return, preferring unused training seeds; ties use training seed then evaluation seed. All panels share coordinate scales and a colour scale. All trajectories are solid and fully opaque. Segment colour is $Q(s_t,a_t)-G_t$, with the frozen final online critic and discounted observed suffix return ($\gamma=0.99$, saved continuation to termination or 10,000 transitions); positive values indicate overestimation. Trajectories end within the 1,000-transition performance budget. Grey curves show the terrain for the three evaluation seeds, the dark bar marks the pad, and dashed verticals mark the exit boundaries. Circles mark starts, crosses termination or cutoff, and open diamonds mark asleep termination. Numbers identify the flights listed in each panel's title; $R$ is the performance return.}
+\caption{Three flights for each of four failure outcomes: collision, boundary exit, performance timeout and asleep with $R<200$, arranged in a $2\times2$ grid. These failures account for 182/200 flights (91.0\%); episodes meeting the official $R\ge200$ success criterion appear separately in Figure~\ref{fig:ddpg-successful-landings}. Flights are selected near the 25th, 50th and 75th percentiles of each subset's performance return, preferring unused training seeds; ties use training seed then evaluation seed. All panels share coordinate and colour scales. Solid, fully opaque trajectories are coloured by $Q(s_t,a_t)-G_t$, using the frozen final online critic and discounted observed suffix return ($\gamma=0.99$, saved continuation to termination or 10,000 transitions); positive values indicate overestimation. Trajectories end within the 1,000-transition performance budget. Positions track the body centre. Grey curves show terrain, the dark bar marks the pad and dashed verticals mark exit boundaries. Circles mark starts, crosses termination or cutoff, and open diamonds asleep termination. Numbers identify the flights in each title; $R$ is the performance return.}
 \label{fig:ddpg-metric-trajectories}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.72\linewidth]{figures/stage-a-mac-ddpg-successful-landings.pdf}
+\caption{Three representative asleep episodes with $R\ge200$ from 18/200 qualifying flights (9.0\%). This matches Gymnasium's documented solved-episode threshold. No additional landing-pad, leg-contact or engine-off requirement is imposed. The solid, fully opaque trajectories use the same $Q-G$ colour scale as Figure~\ref{fig:ddpg-metric-trajectories}; the vertical range is adjusted to these flights. Grey curves show terrain and the dark bar marks the pad. Circles mark starts and open diamonds asleep termination. Numbers identify training/evaluation seeds and performance return $R$ in the title.}
+\label{fig:ddpg-successful-landings}
 \end{figure}
 \FloatBarrier
 """
@@ -458,12 +503,14 @@ def main():
                       exact_pre_action_observations=True,exact_transition_rewards=True,exact_episode_returns=True,
                       published_seed_means_match=True,performance_horizon=HORIZON,contact_includes_terminal_observation=True,
                       replay_method="Saved full-resolution final-policy actions, original 10,000-step wrapper; stop at <=1,000 transitions",
-                      terminal_priority=["boundary_exit", "collision", "successful_landing", "asleep_without_pad_landing", "performance_timeout"],
+                      terminal_priority=["asleep_high_return", "asleep_low_return", "boundary_exit", "collision", "performance_timeout"],
                       simultaneous_terminal_signal_flights=sum(r["simultaneous_terminal_signals"]>1 for r in records),
                       bootstrap_resamples=10000,bootstrap_rng_seed=419,versions=versions,
-                      trajectory_panels=4, trajectory_grid=[2, 2], flights_per_panel=3, plotted_metrics=list(PLOT_KEYS),
+                      trajectory_panels=5, trajectory_grid=[2, 2], successful_landing_grid=[1, 1], trajectory_figures=2, flights_per_panel=3, plotted_metrics=list(PLOT_KEYS),
                       selection="Nearest 25th/50th/75th return percentiles, preferring unused training seeds; ties by training then evaluation seed",
-                      landing_definition="Sleep without failure, active ground contacts for both feet, all active ground-contact points within pad x bounds (tolerance 1e-6 m)",
+                      success_definition="Total undiscounted performance return >= 200 (Gymnasium documented solved-episode criterion), no pad/contact/engine requirement",
+                      environment_landing_reward_definition="Terminal reward +100 whenever lander.awake is false",
+                      success_source="https://gymnasium.farama.org/environments/box2d/lunar_lander/#rewards",
                       contact_definition="Any active touching Box2D leg/moon contact with a nonempty manifold",
                       contact_flag_disagreement_flights=sum(r["contact_flag_disagreement_steps"] > 0 for r in records),
                       contact_flag_disagreement_steps=sum(r["contact_flag_disagreement_steps"] for r in records),

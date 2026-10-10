@@ -8,6 +8,7 @@ render_lunarlander_figures.cjs using the Codex bundled Node dependency runtime.
 """
 
 from html import escape
+import math
 from pathlib import Path
 import re
 import xml.etree.ElementTree as ET
@@ -32,11 +33,11 @@ class Figure:
         self.parts.append(value)
 
     def text(self, x, y, value, size=24, weight=400, anchor="start", color="ink"):
-        segments = re.split(r"(a_main|a_side)", value)
+        segments = re.split(r"(a_main|a_side|c_L|c_R)", value)
         content = "".join(
-            f'<tspan baseline-shift="0" font-size="{size}">a</tspan>'
+            f'<tspan baseline-shift="0" font-size="{size}">{part[0]}</tspan>'
             + f'<tspan font-size="{size * 0.72}" baseline-shift="{-size * 0.2}">{part[2:]}</tspan>'
-            if part in ("a_main", "a_side")
+            if part in ("a_main", "a_side", "c_L", "c_R")
             else f'<tspan baseline-shift="0" font-size="{size}">{escape(part)}</tspan>'
             for part in segments
         )
@@ -61,12 +62,21 @@ class Figure:
     def rect(self, x, y, w, h, color):
         self.raw(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="{C[color]}"/>')
 
-    def craft(self, x, y, scale, angle=0, ports=False):
+    def vector_label(self, x, y, symbol, suffix="", size=25):
+        # Draw the over-arrow as geometry; combining Unicode arrows lack
+        # consistent font support across the browser, raster and PDF renderers.
+        self.text(x, y, symbol + suffix, size)
+        width = size * (0.75 if symbol == "ω" else 0.55)
+        arrow_y = y - size * 0.88
+        self.path(f"M {x} {arrow_y} h {width} m -4 -3 l 4 3 l -4 3", "ink", 1.4)
+
+    def craft(self, x, y, scale, angle=0, ports=False, ghost=False, opacity=1):
         # Screen-coordinate conversion of Gymnasium's LANDER_POLY.
-        self.raw(f'<g transform="translate({x} {y}) rotate({angle}) scale({scale})">')
-        self.raw(f'<path d="M -14 -17 L -17 0 L -17 10 L 17 10 L 17 0 L 14 -17 Z" fill="{C["body"]}" stroke="{C["outline"]}" stroke-width="1.2"/>')
+        fill, stroke = (C["terrain"], C["guide"]) if ghost else (C["body"], C["outline"])
+        self.raw(f'<g opacity="{opacity}" transform="translate({x} {y}) rotate({angle}) scale({scale})">')
+        self.raw(f'<path d="M -14 -17 L -17 0 L -17 10 L 17 10 L 17 0 L 14 -17 Z" fill="{fill}" stroke="{stroke}" stroke-width="1.2"/>')
         for sign in (-1, 1):
-            self.raw(f'<path d="M {sign*14} 5 L {sign*24} 25 L {sign*25} 29 L {sign*20} 29 L {sign*19} 24 L {sign*11} 8 Z" fill="{C["body"]}" stroke="{C["outline"]}" stroke-width="1"/>')
+            self.raw(f'<path d="M {sign*14} 5 L {sign*24} 25 L {sign*25} 29 L {sign*20} 29 L {sign*19} 24 L {sign*11} 8 Z" fill="{fill}" stroke="{stroke}" stroke-width="1"/>')
         if ports:
             for sign in (-1, 1):
                 self.raw(f'<rect x="{sign*15-2}" y="-16" width="4" height="6" fill="{C["side"]}"/>')
@@ -82,75 +92,99 @@ class Figure:
 
 
 def observations():
-    f = Figure("LunarLander-v3 — observations", "Eight observations with direct geometric labels. Blue dimensions locate the body relative to x zero at the target centre and y zero at pad height plus a nominal 0.6 world-unit leg offset. Green signed arrows show the declared velocity bounds, not a sampled velocity. Purple arcs show angle and angular velocity. The angle inset shows that minus two pi and plus two pi each make a full turn and return to the upright orientation. Contact entries are indexed as in Gymnasium. Numeric intervals are declared Box bounds, not clipping or reachable limits. Scene geometry is schematic.", 620)
-    f.text(50, 52, "LunarLander-v3", 30, 600)
-    f.text(50, 88, "s = (x, y, vₓ, vᵧ, θ, ω, c₀, c₁)", 24)
+    f = Figure("LunarLander-v3 — observations", "Layout inspired by the user's observation sketch. Left: an upright airborne lander right of the target, blue horizontal x and vertical y dimensions, reference coordinates, green arrows for both signs of each velocity component, and a centre dot above the velocity arrows. Right: three tilt examples for negative, zero and positive theta; clockwise and counterclockwise motion examples for negative and positive omega, using grey prior poses; all four leg-contact combinations, including hovering with neither leg touching the ground. Positive theta and omega are counterclockwise. The y zero datum is 0.6 world units above the pad. State vector order matches Gymnasium: right contact then left contact. Arrows above velocity symbols are the user's pictorial notation for signed components; the actual entries are scalar observations.", 600)
+    f.text(45, 54, "s = [", 28)
+    f.text(115, 54, "x,", 28)
+    f.text(149, 54, "y,", 28)
+    f.vector_label(185, 54, "vₓ", ",", 28)
+    f.vector_label(233, 54, "vᵧ", ",", 28)
+    f.text(281, 54, "θ,", 28)
+    f.vector_label(322, 54, "ω", ",", 28)
+    f.text(373, 54, "c_R,", 28)
+    f.text(431, 54, "c_L]", 28)
 
-    # Terrain and target. No explanatory prose over the scene.
-    f.path("M 50 535 L 115 502 L 207 518 L 300 545 L 330 545 L 510 545 L 618 545 L 691 524 L 761 508 L 810 533 L 810 594 L 50 594 Z", fill=C["terrain"], width=0)
-    f.line(330, 545, 510, 545, "ink", 2)
-    for x in (330, 510):
-        f.line(x, 545, x, 498, "muted", 2)
-        f.path(f"M {x} 498 L {x+27} 505 L {x} 512 Z", "position", 1, C["position"])
-    f.text(420, 584, "x = 0", 25, 600, anchor="middle")
-    f.text(200, 584, "x < 0", 24, anchor="middle")
-    f.text(680, 584, "x > 0", 24, anchor="middle")
+    # Main scene: target and body-height datum.
+    f.rect(50, 490, 560, 35, "terrain")
+    f.line(50, 490, 610, 490, "ink", 2)
+    for x in (210, 430):
+        f.line(x, 490, x, 436, "muted", 2)
+        f.path(f"M {x} 436 L {x+29} 445 L {x} 454 Z", "position", 1, C["position"])
+    f.line(75, 450, 610, 450, dash="7 8")
+    f.text(620, 458, "y = 0", 24)
+    f.line(320, 335, 320, 490, dash="7 8")
+    f.line(390, 285, 390, 490, dash="7 8")
+    f.line(324, 419, 386, 419, "position", 2.5, both=True)
+    f.text(355, 401, "x", 27, 600, anchor="middle")
+    f.dot(320, 490, "position", 4)
+    for x, value in ((120, "x < 0"), (320, "x = 0"), (525, "x > 0")):
+        f.text(x, 556, value, 25, 600 if x == 320 else 400, anchor="middle")
+    f.line(485, 450, 485, 490, "position", 1.8, both=True)
+    f.text(506, 479, "0.6", 23)
+    f.line(390, 220, 590, 220, dash="5 7")
+    f.line(590, 225, 590, 444, "position", 2.5, both=True)
+    f.text(608, 345, "y", 27, 600)
 
-    # A distinct y datum is above the physical pad, not at its surface.
-    f.line(310, 510, 810, 510, dash="5 7")
-    f.dot(420, 510, "position", 4)
-    f.text(835, 518, "y = 0", 25, 600)
-    f.text(835, 551, "Y = Yₚₐd + 0.6", 24)
-    f.line(380, 510, 380, 545, "muted", 1.5)
-    f.line(374, 510, 386, 510, "muted", 1.5)
-    f.line(374, 545, 386, 545, "muted", 1.5)
-    f.text(372, 536, "0.6", 22, anchor="end")
+    # Main lander is upright; signed arrows describe possible velocity directions.
+    f.craft(390, 220, 2.2)
+    f.line(390, 218, 390, 116, "velocity", 3.2, arrow=True)
+    f.line(390, 222, 390, 326, "velocity", 3.2, arrow=True)
+    f.line(392, 220, 550, 220, "velocity", 3.2, arrow=True)
+    f.line(388, 220, 245, 220, "velocity", 3.2, arrow=True)
+    f.dot(390, 220, "ink", 4.5)
+    f.vector_label(414, 128, "vᵧ", " > 0")
+    f.vector_label(414, 326, "vᵧ", " < 0")
+    f.vector_label(480, 196, "vₓ", " > 0")
+    f.vector_label(230, 196, "vₓ", " < 0")
 
-    # Position dimensions and domains are adjacent to their arrows.
-    f.line(420, 320, 420, 510, dash="5 7")
-    f.line(560, 335, 560, 510, dash="5 7")
-    f.line(425, 474, 555, 474, "position", 2.5, both=True)
-    f.text(490, 455, "x ∈ [−2.5, 2.5]", 23, anchor="middle")
-    f.line(560, 250, 805, 250, dash="5 7")
-    f.line(805, 255, 805, 505, "position", 2.5, both=True)
-    f.text(835, 369, "y ∈ [−2.5, 2.5]", 24)
+    # Tilt examples: fixed orientation, with upright reference rays.
+    for x, angle, label in ((750, 25, "θ < 0"), (925, 0, "θ = 0"), (1100, -25, "θ > 0")):
+        f.text(x, 93, label, 25, anchor="middle")
+        if angle:
+            r = 61
+            dx = math.sin(math.radians(angle)) * r
+            dy = -math.cos(math.radians(angle)) * r
+            f.line(x, 162, x, 101, dash="5 6")
+            f.line(x, 162, x+dx, 162+dy, "rotation", 1.5, dash="5 6")
+            arc_r = 40
+            ex = x + math.sin(math.radians(angle)) * arc_r
+            ey = 162 - math.cos(math.radians(angle)) * arc_r
+            sweep = 1 if angle > 0 else 0
+            f.path(f"M {x} 122 A 40 40 0 0 {sweep} {ex} {ey}", "rotation", 2.1, arrow=True)
+        f.craft(x, 162, 1.55, angle)
+        f.dot(x, 162, "ink", 2)
 
-    # Signed velocity rulers. Craft masks their centre; arrows encode both signs.
-    f.line(425, 250, 695, 250, "velocity", 3, both=True)
-    f.text(408, 258, "−10", 23, anchor="end")
-    f.text(718, 258, "+10", 23)
-    f.text(650, 225, "vₓ", 27, 600, anchor="middle")
-    f.line(560, 135, 560, 365, "velocity", 3, both=True)
-    f.text(560, 120, "+10", 23, anchor="middle")
-    f.text(560, 398, "−10", 23, anchor="middle")
-    f.text(592, 398, "vᵧ", 27, 600)
+    # Motion examples: grey poses progress into the purple current pose.
+    for x, direction, suffix in ((820, 1, " < 0"), (1040, -1, " > 0")):
+        f.vector_label(x-40, 262, "ω", suffix)
+        for angle, opacity in ((-15, 0.2), (0, 0.35), (15, 0.55)):
+            f.craft(x, 333, 1.65, direction * angle, ghost=True, opacity=opacity)
+        f.craft(x, 333, 1.65, direction * 30)
+        start = -110 if direction == 1 else -70
+        end = 15 if direction == 1 else -195
+        r = 65
+        sx, sy = x+r*math.cos(math.radians(start)), 333+r*math.sin(math.radians(start))
+        ex, ey = x+r*math.cos(math.radians(end)), 333+r*math.sin(math.radians(end))
+        sweep = 1 if direction == 1 else 0
+        f.path(f"M {sx} {sy} A 65 65 0 0 {sweep} {ex} {ey}", "rotation", 2.4, arrow=True)
 
-    # Angle relative to upright; omega uses an independent curved arrow.
-    f.line(560, 248, 560, 173, dash="5 7")
-    f.line(560, 248, 534, 178, "rotation", 1.5, dash="5 7")
-    f.path("M 560 190 A 60 60 0 0 0 539.5 193.6", "rotation", 2.5, arrow=True)
-    f.text(511, 189, "θ", 27, 600)
-    f.path("M 507 159 C 450 150 411 194 431 231", "rotation", 2.5, arrow=True)
-    f.text(180, 170, "ω ∈ [−10, 10]", 24)
-    f.craft(560, 250, 2.2, -20)
-    f.dot(560, 250, "ink", 3)
-
-    # Short leaders; both contact domains sit on the same baseline.
-    f.path("M 536 327 L 480 342", "muted", 1.5)
-    f.dot(536, 327, radius=3)
-    f.path("M 627 293 L 699 342", "muted", 1.5)
-    f.dot(627, 293, radius=3)
-    f.text(420, 372, "c₁ ∈ {0, 1}", 24, anchor="middle")
-    f.text(700, 372, "c₀ ∈ {0, 1}", 24, anchor="middle")
-
-    # Visualize the actual angular endpoints: +/- 2 pi are full turns, not tilts.
-    f.text(1030, 128, "θ ∈ [−2π, 2π]", 25, anchor="middle")
-    for x, value, sweep in ((930, "−2π", 1), (1030, "0", None), (1130, "+2π", 0)):
-        if sweep is not None:
-            f.path(f"M {x} 161 A 44 44 0 0 {sweep} {x} 249 A 44 44 0 0 {sweep} {x} 161", "rotation", 2, arrow=True)
-        f.craft(x, 205, 1.0)
-        f.text(x, 285, value, 24, anchor="middle")
-    f.text(1030, 321, "±2π = ±360°", 24, anchor="middle")
+    # Four contact combinations, including a hovering craft with neither toe down.
+    for x, angle, left, right in ((720, -18, 1, 0), (855, 0, 1, 1), (990, 18, 0, 1), (1125, 0, 0, 0)):
+        scale = 1.2
+        def toe(sign):
+            px, py = sign * 25, 29
+            a = math.radians(angle)
+            return scale*(px*math.cos(a)-py*math.sin(a)), scale*(px*math.sin(a)+py*math.cos(a))
+        offsets = [toe(sign) for sign in (-1, 1)]
+        cy = 511-max(dy for _, dy in offsets)
+        if not (left or right):
+            cy -= 26
+        f.craft(x, cy, scale, angle)
+        f.line(x-55, 511, x+55, 511, "ink", 2)
+        for (dx, dy), value in zip(offsets, (left, right)):
+            if value:
+                f.dot(x+dx, cy+dy, "muted", 3)
+        f.text(x-30, 551, f"c_L = {left}", 20, anchor="middle")
+        f.text(x+30, 551, f"c_R = {right}", 20, anchor="middle")
     f.write("lunarlander-observations.svg")
 
 

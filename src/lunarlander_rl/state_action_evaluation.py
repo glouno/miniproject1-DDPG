@@ -125,15 +125,17 @@ def paired_interval(values, reference):
 
 
 def evaluate(run, out, eval_seed=40009, flight_step=75, steps=(20000, 50000, 300000, 1000000),
-             grid_size=9, repeats=5, validation_repeats=20, workers=6):
+             grid_size=9, repeats=5, validation_repeats=20, workers=6,
+             reference_run=None, make_plots=True):
     run, out = Path(run).resolve(), Path(out).resolve()
+    reference_run = Path(reference_run).resolve() if reference_run is not None else run
     out.mkdir(parents=True, exist_ok=False)
     started = time.perf_counter()
     paths = {int(step): str(run / f"checkpoint-{step:07d}.pt") for step in steps}
-    rows = [json.loads(line) for line in (run / "metrics.jsonl").read_text().splitlines()]
+    rows = [json.loads(line) for line in (reference_run / "metrics.jsonl").read_text().splitlines()]
     reference_metric = next(r for r in rows if r["step"] == 1000000)
     episode = next(r for r in reference_metric["on_policy"]["episodes"] if r["seed"] == eval_seed)
-    with np.load(run / "diagnostics/on_policy-1000000.npz") as data:
+    with np.load(reference_run / "diagnostics/on_policy-1000000.npz") as data:
         index = episode["index"]
         lo, hi = (int(data["trajectory_offsets"][index+i]) for i in (0, 1))
         reference_obs = data["trajectory_obs"][lo:hi].copy()
@@ -144,11 +146,22 @@ def evaluate(run, out, eval_seed=40009, flight_step=75, steps=(20000, 50000, 300
         prefix=reference_actions[:flight_step].tolist(), obs=reference_obs[flight_step].tolist(),
         prefix_return=float(reference_rewards[:flight_step].sum()))
     atomic_json(out / "state.json", probe)
+    atomic_npz(out / "reference_trajectory.npz", observations=reference_obs,
+               actions=reference_actions, rewards=reference_rewards)
     models = {step: load_checkpoint(path)[:3] for step, path in paths.items()}
     cfg, actor, _ = models[1000000]
-    original = rollout(cfg, actor, probe, reference_actions[flight_step], capture=True)
+    reference_path = reference_run / "checkpoint-1000000.pt"
+    reference_cfg, reference_actor, _, _ = load_checkpoint(reference_path)
+    for checkpoint_cfg, _, _ in models.values():
+        for field in ('env_id', 'continuous', 'gravity', 'enable_wind', 'gamma',
+                      'train_horizon', 'diagnostic_horizon'):
+            assert getattr(checkpoint_cfg, field) == getattr(reference_cfg, field), field
+    # Verify the source flight with its own actor, even when evaluating another condition.
+    original = rollout(reference_cfg, reference_actor, probe, reference_actions[flight_step], capture=True)
     np.testing.assert_allclose(original["rewards"], reference_rewards[flight_step:], rtol=0, atol=1e-10)
     np.testing.assert_array_equal(original["observations"][:-1], reference_obs[flight_step:])
+    terrain, pad_x, pad_y = landing_geometry(cfg, probe)
+    atomic_npz(out / 'landing_geometry.npz', terrain=terrain, pad_x=pad_x, pad_y=np.asarray(pad_y))
     print("Verified exact physical replay and original reward suffix", flush=True)
     axis, grid = action_grid(grid_size)
     records = {}
@@ -217,11 +230,16 @@ def evaluate(run, out, eval_seed=40009, flight_step=75, steps=(20000, 50000, 300
         note="Single selected physical state, not a population analysis. G heatmaps: 5 paired future seeds; selected candidates checked on 20 separate seeds. No critic-filled tails. Earlier policies may not visit this state."))
     atomic_json(out/"rollouts.json", dict(grid=raw_records, validation=[dict(checkpoint=s, action_index=i, **r) for s,i,r in validation]))
     atomic_json(out/"provenance.json", dict(checkpoints={str(s):dict(path=p, sha256=hashlib.sha256(Path(p).read_bytes()).hexdigest()) for s,p in paths.items()},
+        reference=dict(run=str(reference_run), checkpoint=str(reference_path),
+                       sha256=hashlib.sha256(reference_path.read_bytes()).hexdigest()),
+        condition=dict(algorithm=cfg.algorithm, actor_layer_norm=cfg.actor_layer_norm,
+                       critic_layer_norm=cfg.layer_norm if cfg.critic_layer_norm is None else cfg.critic_layer_norm),
         source_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(), eval_seed=eval_seed,
         training_seed=cfg.seed, future_seeds=seeds, validation_seeds=validation_seeds,
         grid_size=grid_size, workers=workers, physical_replay_verified=True, original_reward_suffix_verified=True,
         native_reward_units=True, diagnostic_cutoff=cfg.diagnostic_horizon, gamma=cfg.gamma))
-    plot(out, summary, probe, reference_obs)
+    if make_plots:
+        plot(out, summary, probe, reference_obs)
     print(f"Completed in {time.perf_counter()-started:.1f}s: {out}", flush=True)
     return summary
 
@@ -232,6 +250,10 @@ def plot(out, summary, probe, reference_obs):
     import matplotlib.pyplot as plt
     from matplotlib.colors import TwoSlopeNorm
     from matplotlib.lines import Line2D
+    provenance = json.loads((out/'provenance.json').read_text())
+    cfg = load_checkpoint(provenance['checkpoints']['1000000']['path'])[0]
+    critic_ln = cfg.layer_norm if cfg.critic_layer_norm is None else cfg.critic_layer_norm
+    condition = f"{cfg.algorithm.upper()}, critic LN {'on' if critic_ln else 'off'}, actor LN {'on' if cfg.actor_layer_norm else 'off'}"
     plt.rcParams.update({"font.size":10, "axes.spines.top":False, "axes.spines.right":False})
     steps = [r["checkpoint"] for r in summary]
     values = {step:dict(np.load(out/f"values-{step:07d}.npz")) for step in steps}
@@ -263,29 +285,10 @@ def plot(out, summary, probe, reference_obs):
             if r==0:ax.set_title(f"{checkpoint_label(row['checkpoint'])} training transitions")
             if r==1:ax.set_xlabel("Main-engine command",labelpad=2)
     handles=[Line2D([],[],marker=m,color="none",markerfacecolor=c,markeredgecolor="black",markersize=9,label=l.replace('_',' ')) for l,m,c,_ in markers]
-    fig.suptitle(f"DDPG · critic LN on · actor LN off · training seed 21 · eval seed {probe['seed']}\nFixed state at step {probe['flight_step']} · independent color ranges per panel · G: five paired continuations",fontsize=12)
+    fig.suptitle(f"{condition}, training seed {cfg.seed}, eval seed {probe['seed']}\nFixed state at step {probe['flight_step']}, independent color ranges per panel, G: five paired continuations",fontsize=12)
     fig.legend(handles=handles,loc="outside lower center",ncol=3,frameon=False)
     save(fig,out/"heatmaps",plt)
-    # Relative values make ranking differences visible despite the large Q offset.
-    limits={key:max(float(np.abs(v[key][:-1]-v[key][-1]).max()) for v in values.values()) for key in ('q','g')}
-    preference_images={}
-    fig,axes=plt.subplots(2,4,figsize=(16,7),layout="constrained",sharex=True,sharey=True)
-    for col,row in enumerate(summary):
-        v=values[row['checkpoint']];n=len(v['axis'])
-        for r,key in enumerate(('q','g')):
-            ax=axes[r,col];delta=v[key][:-1]-v[key][-1]
-            im=ax.pcolormesh(v['axis'],v['axis'],delta.reshape(n,n),shading="nearest",cmap="RdBu_r",norm=TwoSlopeNorm(vmin=-limits[key],vcenter=0,vmax=limits[key]))
-            preference_images[key]=im
-            for label,marker,color,size in markers:ax.scatter(*row[label]['action'],marker=marker,c=color,s=size,edgecolors="black",linewidths=.8,clip_on=False)
-            ax.set(xlim=(-1,1),ylim=(-1,1),aspect="equal",xticks=[-1,0,1],yticks=[-1,0,1])
-            if r==0:ax.set_title(f"{row['checkpoint']/1000:g}k")
-            if col==0:ax.set_ylabel(('ΔQ versus actor' if r==0 else 'ΔG versus actor')+'\nLateral command')
-            if r==1:ax.set_xlabel('Main-engine command')
-    for r,key in enumerate(('q','g')):
-        fig.colorbar(preference_images[key],ax=axes[r,:].tolist(),label=f'Δ{key.upper()} in raw units; red = higher')
-    fig.suptitle('Action preferences relative to the actor; separate scales for ΔQ and ΔG\nSame scale across checkpoints within each row; G uses five paired future seeds')
-    fig.legend(handles=handles,loc='outside lower center',ncol=3,frameon=False)
-    save(fig,out/'action_preferences',plt)
+    plot_action_preferences(out, summary)
     fig,axes=plt.subplots(1,3,figsize=(15,4.8),layout='constrained');x=np.arange(len(summary))
     labels=[f'{s/1000:g}k' for s in steps]
     axes[0].plot(x,[r['actor']['q'] for r in summary],'o-',color='#ad3f36',label='Predicted Q')
@@ -302,8 +305,6 @@ def plot(out, summary, probe, reference_obs):
     axes[2].set(xlim=(-1.15,1.15),ylim=(-1.15,1.15),xlabel='Main command',ylabel='Lateral command',title='Actor action at the fixed state');axes[2].grid(alpha=.2)
     fig.suptitle('Evolution at one reconstructed state; continuation policy changes with each checkpoint')
     save(fig,out/'evolution',plt)
-    provenance = json.loads((out/'provenance.json').read_text())
-    cfg = load_checkpoint(provenance['checkpoints']['1000000']['path'])[0]
     terrain, pad_x, pad_y = landing_geometry(cfg, probe)
     atomic_npz(out/'landing_geometry.npz', terrain=terrain, pad_x=pad_x, pad_y=np.asarray(pad_y))
     ground_floor=min(float(terrain[:,1].min())-.06,-.2)
@@ -332,7 +333,7 @@ def plot(out, summary, probe, reference_obs):
     fig.suptitle(f"One actor trajectory per checkpoint · reconstructed terrain and landing pad (dark bar)\nShared reference prefix through step {probe['flight_step']} (◆), then checkpoint actor; undiscounted reward, ≤1,000 steps",fontsize=12)
     save(fig,out/'branches',plt)
     lines=['# Stage A: one-state action evaluation','',
-        'DDPG, actor LN off / critic LN on; training seed 21, evaluation seed 40009.',
+        f"{condition}; training seed {cfg.seed}, evaluation seed {probe['seed']}.",
         f"State: before action {probe['flight_step']} in the 1M reference flight. Reset and replay the same {probe['flight_step']} actions for every checkpoint.",
         '','| Checkpoint | Actor Q | Actor mean G | Q − G | Critic-best ΔQ | Critic-best ΔG (95% CI) | MC-selected ΔG (95% CI) |',
         '|---|---:|---:|---:|---:|---|---|']
@@ -343,14 +344,97 @@ def plot(out, summary, probe, reference_obs):
         lines.append(f"| {r['checkpoint']/1000:g}k | {a['q']:.1f} | {a['g']:.1f} | {a['q']-a['g']:+.1f} | {c['delta_q_vs_actor']:+.1f} | {interval(c)} | {interval(best)} |")
     lines += ['', 'Heatmaps use a fixed 9×9 grid plus the exact actor action, five paired future-randomness seeds per action. Highlighted candidates are independently checked with 20 new paired seeds. Intervals describe continuation randomness at this one state, not training-seed uncertainty.',
               '','Diagnostic continuation ends at natural termination or 10,000 steps; censored returns remain finite approximations. Rewards and Q are in original units. No critic prediction fills missing tails.',
-              '','The final actor reproduces the original stored reward suffix and states exactly with original future randomness. Branch plots use that original randomness; heatmaps and candidate summaries use repeated future randomness.',
+              '','The reference actor reproduces its original stored reward suffix and states exactly with original future randomness. Evaluated actors may belong to a different configuration. Branch plots use that original randomness; heatmaps and candidate summaries use repeated future randomness.',
               '','This selected failed-flight state is a case study. Earlier policies may not visit it; each G map follows its own checkpoint policy. Different maps do not by themselves prove a causal training feedback loop.',
-              '', 'Report figures: Q and Q − G maps below use independent linear color ranges with numerical colorbars. Compare numbers, not colors, across panels. Sequential colors expose within-map differences; all prediction errors in this case are positive. G estimates still use five paired continuations and can be noisy.',
+              '', 'Report figures: Q and Q − G maps below use independent linear color ranges with numerical colorbars. Compare numbers, not colors, across panels. Sequential colors expose within-map differences. G estimates still use five paired continuations and can be noisy.',
               '', 'The trajectory panels show only each checkpoint actor after the same reference prefix. Each displayed cumulative reward is the raw, undiscounted sum over that prefix and actor continuation, through termination or the 1,000-step performance boundary. Earlier panels are continuations from the fixed state, not full episodes generated by the earlier actor from reset.',
               '', 'Terrain and landing-pad bounds are reconstructed from evaluation seed 40009, using the same extraction as report/scripts/build_stage_a_failures.py. Geometry is converted into observation coordinates: the pad surface is at y = −0.09, because normalized y = 0 includes the nominal leg offset above the surface.',
               '', '![Q and prediction-error maps](heatmaps.png)', '', '![Actor trajectories](branches.png)',
               '', 'Additional diagnostic figures (excluded from the report): [Action preferences](action_preferences.png), [Evolution](evolution.png).']
     (out/'README.md').write_text('\n'.join(lines)+'\n')
+
+
+def plot_action_preferences(out, summary):
+    """Redraw saved deltas with an independent symmetric range around zero per panel."""
+    plot_value_maps(out, summary)
+
+
+def plot_value_maps(out, summary, quantities=('delta_q', 'delta_g'), stem='action_preferences'):
+    """Render saved absolute or actor-relative Q/G maps without new rollouts."""
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+    import matplotlib.patheffects as pe
+    from matplotlib.lines import Line2D
+    out = Path(out)
+    markers = (('actor', '*', 'white', 38), ('critic_best', '^', '#44dbf5', 22),
+               ('mc_best', 'o', '#00e676', 18))
+    ranges = []
+    with plt.rc_context({'font.size':8, 'axes.labelsize':8, 'xtick.labelsize':7,
+                         'ytick.labelsize':7, 'axes.spines.top':False,
+                         'axes.spines.right':False, 'pdf.fonttype':42}):
+        height = 2.4 if len(quantities) == 1 else 4.05
+        fig, axes = plt.subplots(len(quantities), len(summary), figsize=(6.8, height),
+                                 layout='constrained', sharex=True, sharey=True, squeeze=False)
+        for col, row in enumerate(summary):
+            step = row['checkpoint']
+            with np.load(out/f'values-{step:07d}.npz') as v:
+                axis = v['axis']; n = len(axis)
+                for r, quantity in enumerate(quantities):
+                    relative = quantity.startswith('delta_')
+                    key = quantity.removeprefix('delta_')
+                    ax = axes[r, col]
+                    delta = v[key][:-1] - v[key][-1] if relative else v[key][:-1]
+                    low, high = float(delta.min()), float(delta.max())
+                    # Keep zero at the midpoint and equal magnitudes equally saturated.
+                    if relative:
+                        limit = max(abs(low), abs(high)) or .5
+                        lo, hi = -limit, limit
+                    else:
+                        lo, hi = (low, high) if low != high else (low-.5, high+.5)
+                    im = ax.pcolormesh(axis, axis, delta.reshape(n, n), shading='nearest',
+                                      cmap='RdBu_r' if relative else 'viridis', vmin=lo, vmax=hi,
+                                      edgecolors='none', antialiased=False)
+                    for name, marker, color, size in markers:
+                        point = ax.scatter(*row[name]['action'], marker=marker, c=color, s=size,
+                                           edgecolors='black', linewidths=.55, zorder=5, clip_on=False)
+                        if name == 'mc_best':
+                            point.set_path_effects([pe.Stroke(linewidth=2.3, foreground='white'), pe.Normal()])
+                    ax.grid(False)
+                    ax.set(xlim=(-1,1), ylim=(-1,1), aspect='equal', xticks=[-1,0,1], yticks=[-1,0,1])
+                    ax.tick_params(length=2, pad=2)
+                    label = '1M' if step == 1000000 else f'{step/1000:g}k'
+                    ax.set_title(f'({chr(97+len(summary)*r+col)}) {label} transitions', fontsize=8, pad=5)
+                    middle = 0 if relative else (lo+hi)/2
+                    bar = fig.colorbar(im, ax=ax, orientation='horizontal', pad=.045,
+                                       fraction=.06, aspect=22, ticks=[lo,middle,hi])
+                    bar.set_ticklabels([f'{lo:.2f}', '0' if relative else f'{middle:.2f}', f'{hi:.2f}'])
+                    bar.ax.tick_params(labelsize=6.5, length=2, pad=2)
+                    name = f'Δ{key.upper()}' if relative else key.upper()
+                    bar.set_label(f'{name}, range width {hi-lo:.2f}', fontsize=6.8, labelpad=2)
+                    ranges.append(dict(checkpoint=step, quantity=quantity,
+                                       min=low, max=high, color_limits=[lo,hi],
+                                       actor_baseline=float(v[key][-1])))
+        handles = []
+        labels = {'actor':'Actor', 'critic_best':'Q best', 'mc_best':'MC best'}
+        for name, marker, color, _ in markers:
+            handle = Line2D([], [], marker=marker, linestyle='none', markerfacecolor=color,
+                            markeredgecolor='black', markeredgewidth=.6, markersize=5, label=labels[name])
+            if name == 'mc_best':
+                handle.set_path_effects([pe.Stroke(linewidth=2.3, foreground='white'), pe.Normal()])
+            handles.append(handle)
+        fig.legend(handles=handles, loc='outside upper center', ncol=3, frameon=False,
+                   fontsize=8, handletextpad=.5, columnspacing=1.8)
+        fig.supxlabel('Main-engine command', fontsize=8)
+        fig.supylabel('Lateral-engine command', fontsize=8)
+        fig.savefig(out/f'{stem}.png', dpi=300, bbox_inches='tight')
+        fig.savefig(out/f'{stem}.pdf', bbox_inches='tight')
+        plt.close(fig)
+    atomic_json(out/f'{stem}_metadata.json', dict(
+        color_normalization='independent per-panel ranges; symmetric about zero for deltas, min-max for absolute values; raw reward units',
+        definition='deltas subtract exact actor-action value; G uses saved paired rollout means',
+        panel_ranges=ranges,
+        inputs={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in sorted(out.glob('values-*.npz'))}))
 
 
 def save(fig, path, plt):
@@ -365,8 +449,12 @@ def main():
     parser.add_argument('--output',type=Path,required=True)
     parser.add_argument('--workers',type=int,default=6)
     parser.add_argument('--flight-step',type=int,default=75)
+    parser.add_argument('--reference-run',type=Path,
+                        help='Source of the fixed physical state; defaults to the evaluated run')
+    parser.add_argument('--no-plots',action='store_true',help='Use the report figure renderer afterward')
     args=parser.parse_args()
-    evaluate(args.run,args.output,workers=args.workers,flight_step=args.flight_step)
+    evaluate(args.run,args.output,workers=args.workers,flight_step=args.flight_step,
+             reference_run=args.reference_run,make_plots=not args.no_plots)
 
 
 if __name__=='__main__':main()
