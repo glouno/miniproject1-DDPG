@@ -25,7 +25,7 @@ from torch import nn
 from rl_mind.core import Action
 from rl_mind.data import ReplayBuffer, Transitions
 from rl_mind.nn import soft_update
-from .experiment import Config, initialize, bellman_target, resolve_device, synchronize
+from .experiment import Config, initialize, bellman_target, resolve_device, synchronize, update_targets
 from .study_diagnostics import atomic_json, evaluate_study, sync_directory
 from .tensorboard_logging import create_writer, log_metric, log_episode, log_optimization
 from .mechanism_diagnostics import network_audit, norm, distribution, phase_errors
@@ -303,8 +303,11 @@ def train_study(cfg, output, bank, horizons=(2500, 5000, 10000), resume=False, s
                     critics[0].requires_grad_(True)
                     actor_updates += 1
                 if cfg.algorithm == 'ddpg' or updates % delay == 0:
-                    soft_update(actor, target_actor, cfg.tau)
-                    soft_update(critics, target_critics, cfg.tau)
+                    if cfg.hard_target_interval:
+                        update_targets(actor, target_actor, critics, target_critics, cfg, updates)
+                    else:
+                        soft_update(actor, target_actor, cfg.tau)
+                        soft_update(critics, target_critics, cfg.tau)
             if audit_update:
                 with (output/'optimization.jsonl').open('a') as f:
                     f.write(json.dumps(optimization,allow_nan=False)+'\n');f.flush();os.fsync(f.fileno())

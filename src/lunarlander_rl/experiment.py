@@ -49,6 +49,7 @@ class Config:
     critic_hidden: tuple[int, ...] = (128, 128)
     gamma: float = 0.99
     tau: float = 0.005
+    hard_target_interval: int = 0  # 0: soft updates; otherwise copy every K critic rounds.
     actor_lr: float = 3e-4
     critic_lr: float = 3e-4
     batch_size: int = 128
@@ -83,6 +84,18 @@ class Config:
         assert self.policy_delay > 0 and self.gradient_steps_per_transition > 0
         assert isinstance(self.ddpg_actor_delay, int) and self.ddpg_actor_delay > 0
         assert np.isfinite(self.reward_scale) and self.reward_scale > 0
+        assert isinstance(self.hard_target_interval, int) and self.hard_target_interval >= 0
+        assert not self.hard_target_interval or self.algorithm == 'ddpg'
+
+
+def update_targets(actor, target_actor, critics, target_critics, cfg, updates):
+    if cfg.hard_target_interval:
+        if updates % cfg.hard_target_interval == 0:
+            target_actor.load_state_dict(actor.state_dict())
+            target_critics.load_state_dict(critics.state_dict())
+    else:
+        soft_update(actor, target_actor, cfg.tau)
+        soft_update(critics, target_critics, cfg.tau)
 
 
 def mlp(input_size, hidden, output_size, layer_norm=False):
@@ -394,8 +407,7 @@ def train(cfg, output):
                     actor_optimizer.step()
                     critics[0].requires_grad_(True)
                     actor_updates += 1
-                    soft_update(actor, target_actor, cfg.tau)
-                    soft_update(critics, target_critics, cfg.tau)
+                    update_targets(actor, target_actor, critics, target_critics, cfg, updates)
         if step % cfg.eval_interval == 0 or step == cfg.max_steps:
             checkpoint(step)
     env.close()
