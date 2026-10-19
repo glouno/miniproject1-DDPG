@@ -1,0 +1,43 @@
+{
+  "platform": "Mac (Apple Silicon)",
+  "date": "2026-10-20",
+  "tag": "results-mac-local-20261020",
+  "scope": [
+    "30 focused DDPG runs (actor delay 2, actor delay 3, reward scale 0.1; seeds 20-29; 1M steps each)",
+    "All remaining local outputs, diagnostic inputs, frozen source snapshots, generated figures, checkpoint animations and report/generated"
+  ],
+  "restore_root": "Repository root; archives retain outputs/, generated/, report/generated/ paths",
+  "original_bytes": 5313797381,
+  "file_count": 10280,
+  "assets": [
+    {
+      "name": "mac-local-20261020-focused-actor-delay-2.tar.zst",
+      "size": 889834061,
+      "sha256": "5ca105f89863abcd11146182bb22535bbe091910d02b9e23c0a7d84c28647c72"
+    },
+    {
+      "name": "mac-local-20261020-focused-actor-delay-3.tar.zst",
+      "size": 840773608,
+      "sha256": "645ea97f67820f719c8e83244f4805b37e5d530ddaeab5e5be57879bbe417596"
+    },
+    {
+      "name": "mac-local-20261020-focused-reward-scale-0.1.tar.zst",
+      "size": 877582122,
+      "sha256": "5e80ddd89becc8ec26e5670ff9ea7aaf5a99b2d7f0291759983a01e470c4926e"
+    },
+    {
+      "name": "mac-local-20261020-generated.tar.zst",
+      "size": 971604154,
+      "sha256": "b3bd097438a6e66319b6213911f2444e8d4bcd02b79244ab6cae8b1478f2bd6d"
+    },
+    {
+      "name": "mac-local-20261020-other-outputs-and-provenance.tar.zst",
+      "size": 1105353686,
+      "sha256": "bc130bfc068bf6490b481e3e8b373272b70cd41157b2b0d067db9c20c50e031e"
+    }
+  ],
+  "excluded": [
+    "Recreatable .venv, Python caches, .DS_Store; tracked source belongs in Git"
+  ],
+  "provenance_note": "Original measurements and recorded absolute paths/hashes are preserved unchanged. Some diagnostic inputs duplicate subsets of existing Mac Stage A release."
+}

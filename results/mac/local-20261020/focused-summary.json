@@ -1,0 +1,114 @@
+{
+  "finished_at": "2026-10-09T05:16:09.333346+02:00",
+  "duration_seconds": 18521.14870416699,
+  "n_seeds": 10,
+  "baseline_reused": true,
+  "results": {
+    "actor-delay-2": {
+      "return": {
+        "mean": -20.763549628397943,
+        "sd": 116.62623518680249,
+        "median": -52.16313335772428,
+        "paired_change": 59.02363261553186,
+        "paired_bootstrap_95_ci": [
+          -72.72370339121592,
+          182.78615440714023
+        ],
+        "improved_seeds": 6
+      },
+      "bias": {
+        "mean": 151.9661127080503,
+        "sd": 57.017373214591444,
+        "median": 133.73395460693888,
+        "paired_change": -46.3728355752194,
+        "paired_bootstrap_95_ci": [
+          -101.16544589528914,
+          21.902923960454725
+        ],
+        "improved_seeds": 7
+      },
+      "rmse": {
+        "mean": 157.66194889330183,
+        "sd": 57.46461840687147,
+        "median": 139.96685162788344,
+        "paired_change": -46.701800669111165,
+        "paired_bootstrap_95_ci": [
+          -102.43812876046272,
+          22.169728958687575
+        ],
+        "improved_seeds": 7
+      }
+    },
+    "actor-delay-3": {
+      "return": {
+        "mean": 33.49168527297897,
+        "sd": 188.8051657925048,
+        "median": 81.35224856661486,
+        "paired_change": 113.2788675169088,
+        "paired_bootstrap_95_ci": [
+          -20.46075739306624,
+          236.28554579965123
+        ],
+        "improved_seeds": 9
+      },
+      "bias": {
+        "mean": 94.33157099412057,
+        "sd": 48.260502447450584,
+        "median": 81.46298721430514,
+        "paired_change": -104.00737728914916,
+        "paired_bootstrap_95_ci": [
+          -145.8604436710869,
+          -60.38224288292463
+        ],
+        "improved_seeds": 10
+      },
+      "rmse": {
+        "mean": 101.30845410473447,
+        "sd": 48.65985387956095,
+        "median": 87.99269955070584,
+        "paired_change": -103.0552954576785,
+        "paired_bootstrap_95_ci": [
+          -146.87843608918098,
+          -57.401142592642515
+        ],
+        "improved_seeds": 10
+      }
+    },
+    "reward-scale-0.1": {
+      "return": {
+        "mean": -62.04092681140996,
+        "sd": 89.81972549235809,
+        "median": -85.2818216323138,
+        "paired_change": 17.74625543251986,
+        "paired_bootstrap_95_ci": [
+          -57.021579904287655,
+          103.12246542428409
+        ],
+        "improved_seeds": 5
+      },
+      "bias": {
+        "mean": 270.2268385207442,
+        "sd": 209.7161218494327,
+        "median": 206.189999491948,
+        "paired_change": 71.88789023747447,
+        "paired_bootstrap_95_ci": [
+          -8.193704871302613,
+          193.84493042088081
+        ],
+        "improved_seeds": 3
+      },
+      "rmse": {
+        "mean": 277.30280978186454,
+        "sd": 214.9460566255298,
+        "median": 212.26362077007195,
+        "paired_change": 72.9390602194516,
+        "paired_bootstrap_95_ci": [
+          -9.242070899225421,
+          198.71689758872213
+        ],
+        "improved_seeds": 2
+      }
+    }
+  },
+  "note": "Descriptive paired bootstrap intervals, 10000 seed resamples, RNG 419; post-selection exploratory follow-up; historical baseline on M1 Max, interventions on M1 Air, same CPU backend and package versions."
+}

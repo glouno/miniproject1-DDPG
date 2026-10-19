@@ -91,6 +91,10 @@ Use `--help` on a command for its arguments.
 
 ## Published study results
 
+- [Mac — Local runs and diagnostics — archived 20 October 2026](results/mac/local-20261020/README.md):
+  30 focused DDPG runs, timing runs, diagnostic inputs, checkpoint animations,
+  generated figures and report artifacts, with checksums and restoration instructions.
+
 - [Mac — Stage A — 8 October 2026](results/mac/stage-a-20261008/README.md):
   all 80 million-step actor/critic LayerNorm comparison runs, learning/calibration
   figures, seed-level statistics and timing. Complete raw data and checkpoints are
@@ -152,6 +156,10 @@ Open http://127.0.0.1:6006. `eval/on_policy/return` is the performance score;
 `bias_q1` and `rmse_q1` describe calibration. Training return includes exploration
 noise. JSON/NPZ records remain authoritative; TensorBoard logs are derived outputs.
 Historical runs have no saved optimizer-loss/gradient/activation histories.
+
+For an offline animation of fixed-state Q/G action maps, actor-relative deltas,
+and all five paired Monte Carlo continuations at every saved checkpoint, see
+[the checkpoint explorer](docs/CHECKPOINT_ANIMATION.md).
 
 ## Results and collaboration
 
