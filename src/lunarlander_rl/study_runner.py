@@ -14,6 +14,7 @@ import time
 from .experiment import Config
 from .paths import dependency_lock, frozen_command, project_root, snapshot_source
 from .study_diagnostics import atomic_json, build_probes
+from .study_completion import summary_error
 
 
 def sha(path):
@@ -63,8 +64,9 @@ def run(out):
     def launch(job):
         name=job['directory'];directory=out/name
         if (directory/'summary.json').exists():
-            summary=json.loads((directory/'summary.json').read_text())
-            assert summary['status']=='complete' and summary['transitions']==manifest['config']['max_steps']
+            reason=summary_error(directory,manifest['config']['max_steps'])
+            if reason is not None:
+                update(name,dict(status='failed',summary_error=reason));return name,False
             update(name,dict(status='complete',reused=True));return name,True
         if time.monotonic()>=deadline:
             update(name,dict(status='not_started_deadline'));return name,False
@@ -88,13 +90,17 @@ def run(out):
                     except subprocess.TimeoutExpired:
                         process.kill();process.wait()
                     update(name,dict(status='paused_deadline'));return name,False
-            if code==0 and (directory/'summary.json').exists():
+            reason=summary_error(directory,manifest['config']['max_steps'])
+            if code==0 and reason is None:
                 update(name,dict(status='complete'));print('COMPLETE',name,flush=True);return name,True
             if time.monotonic()>=deadline:
                 break
             if not ((directory/'resume.pt').exists() or (directory/'resume.previous.pt').exists()):
                 break
-        update(name,dict(status='failed',exit_code=code));print('FAILED',name,code,flush=True);return name,False
+        failure=dict(status='failed',exit_code=code)
+        if reason is not None:
+            failure['summary_error']=reason
+        update(name,failure);print('FAILED',name,code,flush=True);return name,False
     with ThreadPoolExecutor(max_workers=manifest['workers']) as pool:
         results=[future.result() for future in as_completed([pool.submit(launch,j) for j in manifest['jobs']])]
     successful=all(ok for _,ok in results)
