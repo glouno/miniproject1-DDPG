@@ -129,6 +129,13 @@ for workers and analysis. It records source/config/lock/probe hashes and verifie
 them before continuing. New inference-only pilot checkpoints cannot resume
 training; the study trainer saves replay, optimizers and recovery state.
 
+Status counts a run complete only when its saved summary reports `complete` and
+the exact planned transition count. Missing or invalid summaries appear in
+`unresolved_summaries` with a reason. The runner applies the same check to reused
+and newly finished jobs; an invalid existing summary is retained for inspection
+and marks that job failed, while other jobs can continue. Do not rewrite frozen
+hashes or delete research artifacts to bypass an unresolved result.
+
 For a new frozen study, the runner itself can also be launched directly from its
 snapshot using the absolute path to this project's interpreter:
 
