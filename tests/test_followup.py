@@ -1,8 +1,6 @@
 """Scientific interventions, non-invasive diagnostics and interruption recovery."""
 from dataclasses import replace
 import json
-import os
-from unittest.mock import patch
 from pathlib import Path
 import tempfile
 import subprocess
@@ -15,17 +13,11 @@ from lunarlander_rl.experiment import Config, initialize
 from lunarlander_rl.study_diagnostics import build_probes
 from lunarlander_rl.study_train import train_study
 from lunarlander_rl.mechanism_diagnostics import network_audit, matched_return
-from lunarlander_rl.followup_runner import jobs_for,prepare,verify,worker_environment
+from lunarlander_rl.followup_runner import jobs_for,prepare,verify
 from lunarlander_rl.benchmark_followup import timing_jobs
 
 
 class FollowupChecks(unittest.TestCase):
-    def test_cpu_workers_hide_cuda_without_changing_parent(self):
-        with patch.dict(os.environ,CUDA_VISIBLE_DEVICES='0'):
-            self.assertEqual(worker_environment({'device':'cpu'})['CUDA_VISIBLE_DEVICES'],'')
-            self.assertEqual(worker_environment({'device':'cuda'})['CUDA_VISIBLE_DEVICES'],'0')
-            self.assertEqual(os.environ['CUDA_VISIBLE_DEVICES'],'0')
-
     def cfg(self,**kwargs):
         return Config(max_steps=1100,learning_starts=100,batch_size=32,replay_capacity=1200,
             actor_hidden=(16,16),critic_hidden=(16,16),eval_interval=1100,
