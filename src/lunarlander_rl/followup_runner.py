@@ -65,7 +65,7 @@ def jobs_for(preset):
     return jobs
 
 
-def prepare(out,preset,workers):
+def prepare(out,preset,workers,benchmark_jobs=None):
     out=Path(out).resolve();out.mkdir(parents=True,exist_ok=False)
     base=project_root()
     source=out/'source';source.mkdir();(out/'logs').mkdir()
@@ -74,14 +74,17 @@ def prepare(out,preset,workers):
     shutil.copy2(lock,source/'uv.lock')
     shutil.copy2(lock.with_name('pyproject.toml'),source/'pyproject.toml')
     shutil.copy2(base/'docs/NEXT_STUDY_PROTOCOL.md',source/'NEXT_STUDY_PROTOCOL.md')
-    jobs=jobs_for(preset)
+    if benchmark_jobs is not None and preset!='benchmark':
+        raise ValueError('Custom timing jobs are only allowed in benchmark queues')
+    jobs=jobs_for(preset) if benchmark_jobs is None else benchmark_jobs
     (out/'configs').mkdir()
     for index,job in enumerate(jobs):
         Config(**job['config']).validate()
         job['config_path']=f'configs/job-{index:03d}.json'
         atomic_json(out/job['config_path'],job['config'])
     cfg=Config(**jobs[0]['config'])
-    bank=build_probes(cfg,24 if preset=='full' else 4 if preset=='benchmark' else 2,41000,30 if preset=='full' else 5)
+    full_evaluation=preset=='full' or cfg.eval_episodes==20
+    bank=build_probes(cfg,24 if full_evaluation else 4 if preset=='benchmark' else 2,41000,30 if full_evaluation else 5)
     atomic_json(out/'probes.json',bank)
     files=[*(p for p in source.rglob('*') if p.is_file()),out/'probes.json',*(out/'configs').iterdir()]
     manifest=dict(created_at=timestamp(),preset=preset,workers=workers,interpreter=sys.executable,
