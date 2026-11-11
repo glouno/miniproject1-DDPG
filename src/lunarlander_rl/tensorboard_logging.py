@@ -31,6 +31,22 @@ def log_episode(writer, episode):
     writer.add_scalar('train/episode_length', episode['length'], episode['step'])
 
 
+def log_optimization(writer, record):
+    def visit(prefix, value):
+        if isinstance(value, dict):
+            for key, child in value.items():
+                visit(prefix+'/'+key, child)
+        elif isinstance(value, list):
+            for index, child in enumerate(value):
+                visit(prefix+'/'+str(index), child)
+        elif isinstance(value, (int, float)) and math.isfinite(value):
+            writer.add_scalar(prefix, value, record['step'])
+    for key, value in record.items():
+        if key != 'step':
+            visit('optimization/'+key, value)
+    writer.flush()
+
+
 def create_writer(run, destination=None):
     """Rebuild valid history after journal recovery, purging stale event steps."""
     run = Path(run)
@@ -38,7 +54,8 @@ def create_writer(run, destination=None):
     metadata = run/'metadata.json'
     if metadata.exists():
         writer.add_text('reproducibility/metadata', '```json\n'+metadata.read_text()+'\n```', 0)
-    for filename, callback in (('metrics.jsonl', log_metric), ('training_episodes.jsonl', log_episode)):
+    for filename, callback in (('metrics.jsonl', log_metric), ('training_episodes.jsonl', log_episode),
+                               ('optimization.jsonl', log_optimization)):
         journal = run/filename
         if journal.exists():
             for line in journal.read_text().splitlines():

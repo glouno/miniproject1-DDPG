@@ -11,6 +11,7 @@ import hashlib
 import importlib.metadata
 import json
 import os
+import pickle
 from pathlib import Path
 from .paths import dependency_lock, snapshot_source
 import platform
@@ -25,8 +26,9 @@ from rl_mind.core import Action
 from rl_mind.data import ReplayBuffer, Transitions
 from rl_mind.nn import soft_update
 from .experiment import Config, initialize, bellman_target, resolve_device, synchronize
-from .study_diagnostics import atomic_json, evaluate_study
-from .tensorboard_logging import create_writer, log_metric, log_episode
+from .study_diagnostics import atomic_json, evaluate_study, sync_directory
+from .tensorboard_logging import create_writer, log_metric, log_episode, log_optimization
+from .mechanism_diagnostics import network_audit, norm, distribution, phase_errors
 
 
 def atomic_torch(path, state, rotate=False):
@@ -36,6 +38,7 @@ def atomic_torch(path, state, rotate=False):
     if rotate and path.exists():
         os.replace(path, path.with_name('resume.previous.pt'))
     os.replace(tmp, path)
+    sync_directory(path.parent)
 
 
 def snapshot_replay(replay):
@@ -61,7 +64,7 @@ def recover_files(output,step,sizes):
             shutil.copy2(path,archive/name)
             with path.open('r+b') as f:
                 f.truncate(size)
-    for pattern in ('checkpoint-*.pt','diagnostics/*.npz'):
+    for pattern in ('checkpoint-*.pt','diagnostics/*.npz','audits/audit-*.json'):
         for path in output.glob(pattern):
             if int(path.stem.rsplit('-',1)[1])>step:
                 dest=archive/path.relative_to(output);dest.parent.mkdir(parents=True,exist_ok=True);shutil.move(path,dest)
@@ -90,7 +93,9 @@ def train_study(cfg, output, bank, horizons=(2500, 5000, 10000), resume=False, s
         lock_sha256=hashlib.sha256(active_lock.read_bytes()).hexdigest(),
         lock_path=str(active_lock.resolve()),
         device=cfg.device, accelerator_name=(torch.cuda.get_device_name(0) if cfg.device == 'cuda' else None), adam=dict(betas=[0.9, 0.999], eps=1e-8, weight_decay=0.),
-        layer_norm=dict(location='critics only: Linear -> LayerNorm -> ReLU', eps=1e-5),
+        layer_norm=dict(actor=cfg.actor_layer_norm,
+            critic=cfg.layer_norm if cfg.critic_layer_norm is None else cfg.critic_layer_norm,
+            location='hidden Linear -> LayerNorm -> ReLU; outputs unnormalized', eps=1e-5),
         targets='target actor in BOTH algorithms; TD3 uses min and smoothing',
         aggregation='pairs -> episode means -> run means; training seed is inference unit')
     if restoring:
@@ -122,15 +127,24 @@ def train_study(cfg, output, bank, horizons=(2500, 5000, 10000), resume=False, s
         eval_actor = copy.deepcopy(actor).to('cpu') if device.type != 'cpu' else actor
         eval_critics = copy.deepcopy(critics).to('cpu') if device.type != 'cpu' else critics
         metric = evaluate_study(cfg, eval_actor, eval_critics, step, output/'diagnostics', bank, horizons)
+        if cfg.instrumentation:
+            audit=network_audit(actor,critics,target_actor,target_critics,bank)
+            for kind in ('on_policy','common_probe'):
+                with np.load(output/'diagnostics'/f'{kind}-{step:07d}.npz') as pairs:
+                    audit[kind+'_phases']=phase_errors(pairs)
+            (output/'audits').mkdir(exist_ok=True)
+            atomic_json(output/'audits'/f'audit-{step:07d}.json',audit)
         metric.update(critic_rounds=updates, actor_updates=actor_updates,
                       elapsed_seconds=round(elapsed_base + time.monotonic() - started, 3))
         with (output / 'metrics.jsonl').open('a') as f:
             f.write(json.dumps(metric, allow_nan=False) + '\n')
             f.flush(); os.fsync(f.fileno())
-        atomic_torch(output/f'checkpoint-{step:07d}.pt', dict(config=asdict(cfg), actor=actor.state_dict(), critics=critics.state_dict(), step=step))
+        atomic_torch(output/f'checkpoint-{step:07d}.pt', dict(config=asdict(cfg), actor=actor.state_dict(),
+            critics=critics.state_dict(),target_actor=target_actor.state_dict(),
+            target_critics=target_critics.state_dict(),step=step,critic_rounds=updates,actor_updates=actor_updates))
         histories.append(metric)
         log_metric(writer, metric)
-        print(f'{cfg.algorithm} LN={cfg.layer_norm} S{cfg.seed} step={step:,} '
+        print(f'{cfg.algorithm} actorLN={cfg.actor_layer_norm} criticLN={metadata["layer_norm"]["critic"]} S{cfg.seed} step={step:,} '
               f'return={metric["on_policy"]["return"]:.1f} bias={metric["on_policy"]["bias_q1"]:.1f} '
               f'censored={metric["on_policy"]["censored"]} common_bias={metric["common_probe"]["bias_q1"]:.1f}', flush=True)
         checkpoint_seconds += time.monotonic() - checkpoint_started
@@ -142,9 +156,17 @@ def train_study(cfg, output, bank, horizons=(2500, 5000, 10000), resume=False, s
     episode_length = 0
     first_step = 1
     if restoring:
-        path = output/'resume.pt' if (output/'resume.pt').exists() else output/'resume.previous.pt'
         # Only load our own locally generated training state, never external checkpoints.
-        state = torch.load(path, map_location='cpu', weights_only=False)
+        state=None
+        for path in (output/'resume.pt',output/'resume.previous.pt'):
+            if path.exists():
+                try:
+                    state=torch.load(path,map_location='cpu',weights_only=False)
+                    break
+                except (OSError,RuntimeError,EOFError,pickle.UnpicklingError,ValueError):
+                    print(f'Unreadable checkpoint {path}; trying previous',flush=True)
+        if state is None:
+            raise RuntimeError('No readable resume checkpoint')
         assert state['config'] == asdict(cfg)
         actor.load_state_dict(state['actor']); critics.load_state_dict(state['critics'])
         target_actor.load_state_dict(state['target_actor']); target_critics.load_state_dict(state['target_critics'])
@@ -171,7 +193,7 @@ def train_study(cfg, output, bank, horizons=(2500, 5000, 10000), resume=False, s
 
     def save_resume(step):
         sizes = {name:(output/name).stat().st_size if (output/name).exists() else 0
-                 for name in ('metrics.jsonl','training_episodes.jsonl')}
+                 for name in ('metrics.jsonl','training_episodes.jsonl','optimization.jsonl')}
         state = dict(config=asdict(cfg), step=step, actor=actor.state_dict(), critics=critics.state_dict(),
             target_actor=target_actor.state_dict(), target_critics=target_critics.state_dict(),
             actor_optimizer=actor_optimizer.state_dict(), critic_optimizer=critic_optimizer.state_dict(),
@@ -182,6 +204,10 @@ def train_study(cfg, output, bank, horizons=(2500, 5000, 10000), resume=False, s
             checkpoint_seconds=checkpoint_seconds, elapsed_seconds=elapsed_base+time.monotonic()-started,
             journal_sizes=sizes)
         atomic_torch(output/'resume.pt', state, rotate=True)
+
+    def is_evaluation(step):
+        interval=cfg.early_eval_interval if cfg.early_eval_interval and step<=cfg.early_eval_until else cfg.eval_interval
+        return step % interval == 0 or step == cfg.max_steps
 
     writer = create_writer(output)
     if not restoring:
@@ -211,6 +237,7 @@ def train_study(cfg, output, bank, horizons=(2500, 5000, 10000), resume=False, s
             with (output/'training_episodes.jsonl').open('a') as f:
                 f.write(json.dumps(dict(step=step, reward=episode_return, length=episode_length,
                                         terminated=bool(terminated), truncated=bool(truncated)))+'\n')
+                f.flush();os.fsync(f.fileno())
             episode_start_rng = copy.deepcopy(env.unwrapped.np_random.bit_generator.state)
             obs, _ = env.reset()
             episode_actions = []
@@ -218,6 +245,8 @@ def train_study(cfg, output, bank, horizons=(2500, 5000, 10000), resume=False, s
             episode_length = 0
 
         if step >= cfg.learning_starts:
+            audit_update = cfg.instrumentation and step % 1000 == 0
+            optimization = dict(step=step, note='Last training minibatch at this transition')
             for _ in range(cfg.gradient_steps_per_transition):
                 raw = replay.sample(cfg.batch_size)
                 batch = Transitions(obs=raw.obs.to(device),
@@ -239,7 +268,20 @@ def train_study(cfg, output, bank, horizons=(2500, 5000, 10000), resume=False, s
                     raise FloatingPointError(f'Non-finite critic loss at {step}')
                 critic_optimizer.zero_grad(set_to_none=True)
                 critic_loss.backward()
+                if audit_update:
+                    with torch.no_grad():
+                        critic_before=[p.detach().clone() for p in critics.parameters()]
+                        prediction=critics[0](batch.obs,batch.action.value)
+                        optimization.update(critic_loss_sum=float(critic_loss.detach()), critic_gradient_norm=norm(critics.parameters(),True),
+                            td_residual=distribution(prediction-target),q=distribution(prediction),target=distribution(target),
+                            immediate_reward=distribution(batch.reward), bootstrap=distribution(target-batch.reward),
+                            terminal_fraction=float(batch.terminated.float().mean()),
+                            replay_actor_action_distance=float((actor(batch.obs)-batch.action.value).square().mean().sqrt()),
+                            critic_losses=[float(nn.functional.mse_loss(q(batch.obs,batch.action.value),target)) for q in critics])
                 critic_optimizer.step()
+                if audit_update:
+                    optimization.update(critic_parameter_norm=norm(critics.parameters()),
+                        critic_update_norm=norm([p.detach()-old for p,old in zip(critics.parameters(),critic_before)]))
                 updates += 1
                 delay = cfg.policy_delay if cfg.algorithm == 'td3' else 1
                 if updates % delay == 0:
@@ -249,13 +291,25 @@ def train_study(cfg, output, bank, horizons=(2500, 5000, 10000), resume=False, s
                         raise FloatingPointError(f'Non-finite actor loss at {step}')
                     actor_optimizer.zero_grad(set_to_none=True)
                     actor_loss.backward()
+                    if audit_update:
+                        actor_before=[p.detach().clone() for p in actor.parameters()]
+                        optimization.update(actor_loss=float(actor_loss.detach()),actor_gradient_norm=norm(actor.parameters(),True))
                     actor_optimizer.step()
+                    if audit_update:
+                        optimization.update(actor_parameter_norm=norm(actor.parameters()),
+                            actor_update_norm=norm([p.detach()-old for p,old in zip(actor.parameters(),actor_before)]))
                     critics[0].requires_grad_(True)
                     actor_updates += 1
                     soft_update(actor, target_actor, cfg.tau)
                     soft_update(critics, target_critics, cfg.tau)
-        if step % cfg.eval_interval == 0 or step == cfg.max_steps:
+            if audit_update:
+                with (output/'optimization.jsonl').open('a') as f:
+                    f.write(json.dumps(optimization,allow_nan=False)+'\n');f.flush();os.fsync(f.fileno())
+                log_optimization(writer,optimization)
+        if is_evaluation(step):
             checkpoint(step)
+            save_resume(step)
+        elif cfg.resume_interval and step % cfg.resume_interval == 0:
             save_resume(step)
         if step % 1000 == 0 or step == cfg.max_steps:
             atomic_json(output/'progress.json', dict(status='training',step=step,max_steps=cfg.max_steps,
@@ -295,7 +349,7 @@ def main():
     parser.add_argument('--resume',action='store_true')
     args=parser.parse_args()
     settings=json.loads(args.config.read_text());settings.update(algorithm=args.algorithm,layer_norm=bool(args.layer_norm),seed=args.seed)
-    cfg=Config(**settings);assert cfg.device=='cpu','Validated resumable study uses CPU'
+    cfg=Config(**settings);assert cfg.device=='cpu','CLI study supports exact CPU resume; CUDA benchmarks use fresh runs'
     train_study(cfg,args.output,json.loads(args.probes.read_text()),resume=args.resume)
 
 

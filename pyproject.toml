@@ -35,6 +35,10 @@ lander-study-analyse = "lunarlander_rl.study_analyse:main"
 lander-study-review = "lunarlander_rl.review_study:main"
 lander-launch-study = "lunarlander_rl.launch_study:main"
 lander-tensorboard-export = "lunarlander_rl.tensorboard_logging:main"
+lander-followup = "lunarlander_rl.followup_runner:main"
+lander-prepare-wsl = "lunarlander_rl.prepare_wsl_service:main"
+lander-benchmark-followup = "lunarlander_rl.benchmark_followup:main"
+lander-benchmark-devices = "lunarlander_rl.benchmark_devices:main"
 
 [build-system]
 requires = ["hatchling>=1.26"]

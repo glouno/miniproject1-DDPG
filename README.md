@@ -145,3 +145,12 @@ Clone and work in this repository directly. Raw outputs, checkpoints, TensorBoar
 logs and generated figures are ignored and must be retained separately when
 sharing or backing up a run. Source and locked dependencies can regenerate runs,
 but cannot preserve an irreplaceable existing experiment.
+
+## Actor/critic LayerNorm follow-up
+
+See [NEXT_STUDY_PROTOCOL.md](docs/NEXT_STUDY_PROTOCOL.md),
+[WSL_RUNBOOK.md](docs/WSL_RUNBOOK.md) and
+[FOLLOWUP_VALIDATION.md](docs/FOLLOWUP_VALIDATION.md).
+`lander-followup --prepare` freezes the 140-run queue without launching it.
+`lander-prepare-wsl` installs an inactive, resumable user service.
+Scientific outputs are incremental JSON/NPZ records with TensorBoard views.
