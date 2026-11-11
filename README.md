@@ -7,6 +7,8 @@ corrections. The live team report is
 the local pilot analysis is a working note, not a replacement for that report.
 
 Start with [analysis.ipynb](analysis.ipynb), then [PROTOCOL.md](PROTOCOL.md).
+The proposed actor/critic LayerNorm follow-up is specified in
+[NEXT_STUDY_PROTOCOL.md](NEXT_STUDY_PROTOCOL.md); it has not been launched.
 A compact measured-results note is [PILOT_RESULTS.md](PILOT_RESULTS.md).
 The notebook explains Q-values, matched Monte Carlo returns, normalization,
 the measured results and their limitations. It only reads saved experiment
@@ -162,3 +164,8 @@ Raw experiment outputs, checkpoints, TensorBoard logs and generated figures are
 ignored and are not included in a fresh clone. The tracked results notes describe
 completed local runs; regenerating their plots requires the corresponding raw
 data. The shared report remains on Samskrift.
+
+For the actor/critic LayerNorm follow-up, see [WSL_RUNBOOK.md](WSL_RUNBOOK.md).
+`followup_runner.py --prepare` freezes the 140-run queue without launching it;
+`prepare_wsl_service.py` installs an inactive, resumable WSL user service.
+Scientific outputs are incremental JSON/NPZ records, with TensorBoard views.
